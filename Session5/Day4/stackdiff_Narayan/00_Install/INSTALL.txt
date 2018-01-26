@@ -89,8 +89,8 @@ export LDFLAGS="-L/usr/local/lib -L/sw/lib"
 -----------------------------------------------------------------------------------------
 ## Setting up astrometry.net ##
 
-wget http://astrometry.net/downloads/astrometry.net-latest.tar.bz2
-tar xjf astrometry.net-latest.tar.bz2
+wget http://astrometry.net/downloads/astrometry.net-latest.tar.gz
+tar xjf astrometry.net-latest.tar.gz
 cd astrometry.net-*
 
 make
