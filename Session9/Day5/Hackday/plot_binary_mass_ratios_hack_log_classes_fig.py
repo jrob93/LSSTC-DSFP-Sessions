@@ -16,6 +16,7 @@ import os
 import matplotlib.ticker as ticker
 import astropy.stats.bayesian_blocks as bb
 from scipy import stats
+import matplotlib.tri as tri
 
 from sklearn.neighbors import KernelDensity
 
@@ -32,6 +33,7 @@ path="/Users/jrobinson/xq1_grav_cloud/binary_stability/orbit_results/orbit_resul
 fname_dfs=["df_plot_100_all_stable.txt"]
 
 markers=['^','s','o']
+cont_cols=['r','b','g']
 
 for fname_df in fname_dfs:
     df=pd.read_csv("{}/{}".format(path,fname_df),sep="\t",index_col=0) # orbits post selection
@@ -214,6 +216,12 @@ for fname_df in fname_dfs:
     cluster_markers=[(3,2,0),(4,2,0),(5,2,0)]
     cluster_labels=['class (i)','class (ii)','class (iii)']
     unique_labels_order=[0,2,1,-1]
+
+    # Contour arrays
+    X_dat=numpy.array([])
+    Y_dat=numpy.array([])
+    Z_dat=numpy.array([])
+
     for i,k in enumerate(unique_labels_order):
 
         class_member_mask = (labels == k)
@@ -234,6 +242,17 @@ for fname_df in fname_dfs:
             # ax1.scatter(df_cluster['x'],df_cluster['y'],s=10,c=cluster_cols[i],label="cluster {}".format(i))
             ax1.scatter(df_cluster['x'],df_cluster['y'],s=50,c='k',marker=cluster_markers[i],alpha=0.5,label=cluster_labels[i])
             # ax4.scatter(10**numpy.array(df_cluster['x']),10**numpy.array(df_cluster['y']),s=10,c=cluster_cols[i])
+
+            # X_dat=numpy.append(X_dat,numpy.array(df_cluster['x']))
+            # Y_dat=numpy.append(Y_dat,numpy.array(df_cluster['y']))
+            # Z_dat=numpy.append(Z_dat,numpy.zeros(len(df_cluster['x']))+k)
+
+            # Add contours to data
+            Z_dat=numpy.zeros(len(df_cluster['x']))+k
+            triang = tri.Triangulation(df_cluster['x'], df_cluster['y'])
+            # ax1.tricontour(df_cluster['x'], df_cluster['y'], Z_dat, 15, linewidths=10, colors='k',zorder=0)
+            ax1.tricontourf(df_cluster['x'], df_cluster['y'], Z_dat,colors=cont_cols[i],zorder=0,alpha=0.2)
+
 
     # class_member_mask = (labels == -1)
     # # cluster members
@@ -278,6 +297,8 @@ for fname_df in fname_dfs:
     # print numpy.log10(mass_ratios),numpy.log10(m2_min+m1_min)
     ax1.plot(numpy.log10(mass_ratios),numpy.log10(m2_min+m1_min),c='k',linestyle=":",label="selection limit")
     # ax4.plot(mass_ratios,m2_min+m1_min,c='k',linestyle=":")
+    #-------------------------------------------------------------------------------
+
     #-------------------------------------------------------------------------------
 
     padding_y=0.1
