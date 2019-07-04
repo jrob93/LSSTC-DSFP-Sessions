@@ -60,18 +60,17 @@ for fname_df in fname_dfs:
     print "size: {}x{} inches".format(x_len,y_len)
     fig.set_size_inches(x_len,y_len)
     print [1,(0.2)/s_x],[0.2/s_y,1]
-    gs = gridspec.GridSpec(2,2,width_ratios=[1,(0.2)/s_x],height_ratios=[0.2/s_y,1],wspace=0.0, hspace=0.0)
+    # gs = gridspec.GridSpec(2,2,width_ratios=[1,(0.2)/s_x],height_ratios=[0.2/s_y,1],wspace=0.0, hspace=0.0)
+    gs = gridspec.GridSpec(1,1)
 
     # gs = gridspec.GridSpec(3,2,width_ratios=[1,0.2],height_ratios=[0.2,1,1])
-    ax1 = pyplot.subplot(gs[1,0])
-    ax2 = pyplot.subplot(gs[0,0],sharex=ax1)
-    ax3 = pyplot.subplot(gs[1,1],sharey=ax1)
-    # ax4 = pyplot.subplot(gs[2,0])
+    # ax1 = pyplot.subplot(gs[1,0])
+    # ax2 = pyplot.subplot(gs[0,0],sharex=ax1)
+    # ax3 = pyplot.subplot(gs[1,1],sharey=ax1)
+    ax1 = pyplot.subplot(gs[0,0])
 
-    ax2.tick_params(labelbottom=False)
-    ax3.tick_params(labelleft=False)
-    # ax2.yaxis.set_visible(False)
-    # ax3.xaxis.set_visible(False)
+    # ax2.tick_params(labelbottom=False)
+    # ax3.tick_params(labelleft=False)
 
     print len(df)
     print len(df[~numpy.isnan(df['m1(kg)'])])
@@ -143,35 +142,35 @@ for fname_df in fname_dfs:
     print "x max: ",x_min,x_max
     print "y max: ",y_min,y_max
 
-    # add KDE
+    # # add KDE
     N_bin=500
     grid_x=numpy.linspace(-4.0,0.0,N_bin)
     grid_y=numpy.linspace(-5.0,0.0,N_bin)
-
-    # bw=0.1
-    bw_x=0.1/2.0
-    bw_y=0.1
-
-    PDF_x = kde_sklearn(x_data, grid_x,bandwidth=bw_x)
-    ax2.plot(grid_x,PDF_x,color="k")
-    PDF_y = kde_sklearn(y_data, grid_y,bandwidth=bw_y)
-    ax3.plot(PDF_y,grid_y,color="k")
-
-    # print PDF_x
-    # print numpy.diff(grid_x)[0]
-
-    from scipy.integrate import simps
-    # Compute the area using the composite Simpson's rule.
-    # area = simps(PDF_x, grid_x)
-    area = simps(PDF_x, dx=numpy.diff(grid_x)[0])
-    print("area =", area)
-    # area = simps(PDF_y, grid_y)
-    area = simps(PDF_y, dx=numpy.diff(grid_y)[0])
-    print("area =", area)
-
-    # # Add lines denoting rough classes
-    # ax1.vlines([-2.0], 0, 1, transform=ax1.get_xaxis_transform(), colors='r')
-    # ax1.hlines([-2.0], 0, 1, transform=ax1.get_yaxis_transform(), colors='r')
+    #
+    # # bw=0.1
+    # bw_x=0.1/2.0
+    # bw_y=0.1
+    #
+    # PDF_x = kde_sklearn(x_data, grid_x,bandwidth=bw_x)
+    # ax2.plot(grid_x,PDF_x,color="k")
+    # PDF_y = kde_sklearn(y_data, grid_y,bandwidth=bw_y)
+    # ax3.plot(PDF_y,grid_y,color="k")
+    #
+    # # print PDF_x
+    # # print numpy.diff(grid_x)[0]
+    #
+    # from scipy.integrate import simps
+    # # Compute the area using the composite Simpson's rule.
+    # # area = simps(PDF_x, grid_x)
+    # area = simps(PDF_x, dx=numpy.diff(grid_x)[0])
+    # print("area =", area)
+    # # area = simps(PDF_y, grid_y)
+    # area = simps(PDF_y, dx=numpy.diff(grid_y)[0])
+    # print("area =", area)
+    #
+    # # # Add lines denoting rough classes
+    # # ax1.vlines([-2.0], 0, 1, transform=ax1.get_xaxis_transform(), colors='r')
+    # # ax1.hlines([-2.0], 0, 1, transform=ax1.get_yaxis_transform(), colors='r')
 
     #-------------------------------------------------------------------------------
     # Perform cluster search
@@ -217,11 +216,6 @@ for fname_df in fname_dfs:
     cluster_labels=['class (i)','class (ii)','class (iii)']
     unique_labels_order=[0,2,1,-1]
 
-    # Contour arrays
-    X_dat=numpy.array([])
-    Y_dat=numpy.array([])
-    Z_dat=numpy.array([])
-
     for i,k in enumerate(unique_labels_order):
 
         class_member_mask = (labels == k)
@@ -236,16 +230,9 @@ for fname_df in fname_dfs:
 
         if k==-1:
             continue
-            # ax1.scatter(df_cluster['x'],df_cluster['y'],s=10,c='k',label="noise cluster {}".format(i))
-            # ax4.scatter(10**numpy.array(df_cluster['x']),10**numpy.array(df_cluster['y']),c='k')
         else:
-            # ax1.scatter(df_cluster['x'],df_cluster['y'],s=10,c=cluster_cols[i],label="cluster {}".format(i))
-            ax1.scatter(df_cluster['x'],df_cluster['y'],s=50,c='k',marker=cluster_markers[i],alpha=0.5,label=cluster_labels[i])
-            # ax4.scatter(10**numpy.array(df_cluster['x']),10**numpy.array(df_cluster['y']),s=10,c=cluster_cols[i])
 
-            # X_dat=numpy.append(X_dat,numpy.array(df_cluster['x']))
-            # Y_dat=numpy.append(Y_dat,numpy.array(df_cluster['y']))
-            # Z_dat=numpy.append(Z_dat,numpy.zeros(len(df_cluster['x']))+k)
+            # ax1.scatter(df_cluster['x'],df_cluster['y'],s=50,c='k',marker=cluster_markers[i],alpha=0.5,label=cluster_labels[i])
 
             # Add contours to data
             Z_dat=numpy.zeros(len(df_cluster['x']))+k
@@ -276,7 +263,7 @@ for fname_df in fname_dfs:
     print "slope={}\nintercept={}\nr_value={}\np_value={}\nstd_err={}".format(slope,intercept,r_value,p_value,std_err)
     print "log space: y = {}*x + {}".format(slope,intercept)
     print "linear space: y = {}*x^{}".format(intercept,slope)
-    ax1.plot(grid_x,pf.line_fit(grid_x,slope,intercept),c='k',label="y={:.2f}x+{:.2f}".format(slope,intercept))
+    ax1.plot(grid_x,pf.line_fit(grid_x,slope,intercept),c='k',label="y={:.2f}x+{:.2f}".format(slope,intercept),zorder=0)
     # ax4.plot(10**grid_x,10**pf.line_fit(grid_x,slope,intercept),c='k')
 
     # # try chi square?
@@ -305,16 +292,11 @@ for fname_df in fname_dfs:
     padding_x=padding_y
     ax1.set_xlim(numpy.amin(x_data)-padding_x,0.0+padding_x)
     ax1.set_ylim(numpy.amin(y_data)-(2.0*padding_y),0.0+padding_y)
-    # ax4.set_xlim(0.0-padding_x,1.0+padding_x)
-    # ax4.set_ylim(0.0-padding_y,numpy.amax(10**y_data)+padding_y)
 
     ax1.set_xlabel('log(m_2/m_1)')
     ax1.set_ylabel("log((m_2+m_1)/M_c)")
-    ax2.set_ylabel("P.D.")
-    ax3.set_xlabel("P.D.")
-
-    # ax4.set_xlabel('m_2/m_1')
-    # ax4.set_ylabel("(m_2+m_1)/M_c")
+    # ax2.set_ylabel("P.D.")
+    # ax3.set_xlabel("P.D.")
 
     # Remove duplicates from legend
     handles, labels = ax1.get_legend_handles_labels()
