@@ -33,7 +33,7 @@ print df_tot
 print list(df_tot)
 
 # Find anything that is a special case on Grundy's webpage, or a dwarf planet at: https://en.wikipedia.org/wiki/Dwarf_planet
-DP_names=["ceres","pluto","haumea","makemake","eris","orcus","salacia","quaoar","sedna"]
+DP_names=["pluto","haumea","makemake","eris","orcus","salacia","quaoar","sedna"]
 DP_DES=["2002 ms4","2007 or10"]
 df_weird=pd.DataFrame()
 df_norm=pd.DataFrame()
@@ -133,6 +133,7 @@ ax2 = ax1.twiny()
 
 for i,M_tot in enumerate(numpy.unique(numpy.array(df['M_tot(kg)']).astype(float))):
     df2=df[df['M_tot(kg)']==M_tot]
+    print "mass = {}kg, number of binaries = {}".format(M_tot,len(df2))
     rho=numpy.array(df2['rho(kgm-3)']).astype(float)
     R1=((3.0*numpy.array(df2['m1(kg)']).astype(float))/(4.0*numpy.pi*rho))**(1.0/3.0)
     R2=((3.0*numpy.array(df2['m2(kg)']).astype(float))/(4.0*numpy.pi*rho))**(1.0/3.0)
@@ -203,18 +204,18 @@ x_plot=numpy.array([x_lim2,(19.0-c)/m])
 y_plot=(m*x_plot)+c
 ax1.plot(x_plot,y_plot,color="r",linestyle=":")
 
-# # 7 sigma limit
-# x_dat=[2.0,6.0]
-# y_dat=[25.0,21.0]
-# m=(y_dat[1]-y_dat[0])/(x_dat[1]-x_dat[0])
-# c=y_dat[1]-(m*x_dat[1])
-# y_lim=25
-# x_lim1=0
-# x_lim2=(y_lim-c)/m
-# x_plot=numpy.array([x_lim2,(19.0-c)/m])
-# y_plot=(m*x_plot)+c
-# ax1.plot(x_plot,y_plot,color="r",linestyle=":")
-#
+# 7 sigma limit
+x_dat=[2.0,6.0]
+y_dat=[25.0,21.0]
+m=(y_dat[1]-y_dat[0])/(x_dat[1]-x_dat[0])
+c=y_dat[1]-(m*x_dat[1])
+y_lim=25
+x_lim1=0
+x_lim2=(y_lim-c)/m
+x_plot=numpy.array([x_lim2,(19.0-c)/m])
+y_plot=(m*x_plot)+c
+ax1.plot(x_plot,y_plot,color="r",linestyle=":")
+
 # Add orbit search limits
 
 for i,M_tot in enumerate(numpy.unique(numpy.array(df['M_tot(kg)']).astype(float))):
@@ -254,8 +255,22 @@ R1_MU69=(3.0*V1_MU69/(4.0*numpy.pi))**(1.0/3.0)
 R2_MU69=(3.0*V2_MU69/(4.0*numpy.pi))**(1.0/3.0)
 R1_err=R1_MU69*V1_err/(3.0*V1_MU69)
 R2_err=R2_MU69*V2_err/(3.0*V2_MU69)
-d_MU69=44.0
 
+# test one set of params
+d_MU69=44.6 # distance
+p1_MU69=0.165 # Albedo
+p2_MU69=0.165
+print "MU69 magnitude parameters:\nd={}AU\np_V={}\nC_V={}".format(d_MU69,p1_MU69,C)
+print "spherical size of MU69 = {} +/- {}, {} +/- {} m".format(R1_MU69,R1_err,R2_MU69,R2_err)
+delta_mag_MU69=5.0*numpy.log10(numpy.sqrt(p1_MU69/p2_MU69)*(R1_MU69/R2_MU69))
+mag1_MU69=5.0*numpy.log10(C/(numpy.sqrt(p1_MU69)*R1_MU69)*((d_MU69*(d_MU69-d0))/(d0**2.0)))
+m1_err=5.0*(R1_err/(R1_MU69*numpy.log(10)))
+m2_err=5.0*(R2_err/(R2_MU69*numpy.log(10)))
+Dm_err=numpy.sqrt(((m1_err)**2.0)+((m2_err)**2.0))
+print "m1 = {} +/- {}, Delta m = {} +/- {}".format(mag1_MU69,m1_err,delta_mag_MU69,Dm_err)
+
+# use these params
+d_MU69=44.0
 # Albedo
 p1_MU69=p1
 p2_MU69=p1_MU69

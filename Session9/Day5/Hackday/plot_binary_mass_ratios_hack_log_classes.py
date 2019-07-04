@@ -60,12 +60,15 @@ for fname_df in fname_dfs:
     # print [1,(0.2)/s_x],[0.2/s_y,1]
     # gs = gridspec.GridSpec(2,2,width_ratios=[1,(0.2)/s_x],height_ratios=[0.2/s_y,1],wspace=0.0, hspace=0.0)
 
-    gs = gridspec.GridSpec(3,2,width_ratios=[1,0.2],height_ratios=[0.2,1,1])
+    # gs = gridspec.GridSpec(3,2,width_ratios=[1,0.2],height_ratios=[0.2,1,1])
+    gs = gridspec.GridSpec(3,2,width_ratios=[1,1],height_ratios=[0.2,1,1])
     ax1 = pyplot.subplot(gs[1,0])
     ax2 = pyplot.subplot(gs[0,0],sharex=ax1)
     ax3 = pyplot.subplot(gs[1,1],sharey=ax1)
     ax4 = pyplot.subplot(gs[2,0])
     ax5 = pyplot.subplot(gs[2,1])
+
+    ax5.set_aspect('equal')
 
     ax2.tick_params(labelbottom=False)
     ax3.tick_params(labelleft=False)
@@ -231,6 +234,11 @@ for fname_df in fname_dfs:
             ax4.scatter(10**numpy.array(df_cluster['x']),10**numpy.array(df_cluster['y']),s=10,c=cluster_cols[i])
 
             ax5.scatter(X[:,0][class_member_mask & core_samples_mask],X[:,1][class_member_mask & core_samples_mask],s=10,c=cluster_cols[i],label="cluster {}".format(i))
+            # ax5.scatter(X[:,0][class_member_mask],X[:,1][class_member_mask],s=10,c=cluster_cols[i],label="cluster {}".format(i))
+
+    for a, b in zip(X[:,0], X[:,1]):
+        circle = pyplot.Circle((a, b), dbscan_eps, color="k",alpha=0.2, fill=False)
+        ax5.add_artist(circle)
 
     # class_member_mask = (labels == -1)
     # # cluster members

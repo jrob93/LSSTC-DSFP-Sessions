@@ -155,8 +155,8 @@ for fname_df in fname_dfs:
     PDF_y = kde_sklearn(y_data, grid_y,bandwidth=bw_y)
     ax3.plot(PDF_y,grid_y,color="k")
 
-    print PDF_x
-    print numpy.diff(grid_x)[0]
+    # print PDF_x
+    # print numpy.diff(grid_x)[0]
 
     from scipy.integrate import simps
     # Compute the area using the composite Simpson's rule.
@@ -184,21 +184,21 @@ for fname_df in fname_dfs:
 
     # DBscan search, SEARCH RESULTS DEPEND ENTIRELY ON dbscan_eps VARIABLE
     df_fit=pd.DataFrame(numpy.array([x_data,y_data]).T,columns=['x','y'])
-    print df_fit
+    # print df_fit
 
     X=df_fit[['x','y']] #select only position labels (would mass help?)
     X = StandardScaler().fit_transform(X) #rescale the positions: Standardize features by removing the mean and scaling to unit variance
-    print X
+    # print X
 
     db = DBSCAN(eps=dbscan_eps, min_samples=10).fit(X) # do DBSCAN, eps: The maximum distance between two samples for them to be considered as in the same neighborhood.
     core_samples_mask = numpy.zeros_like(db.labels_, dtype=bool)
-    print core_samples_mask
+    # print core_samples_mask
     core_samples_mask[db.core_sample_indices_] = True
     labels = db.labels_
-    print core_samples_mask
-    print labels,len(labels)
-    print len(core_samples_mask)
-    print sum(core_samples_mask)
+    # print core_samples_mask
+    # print labels,len(labels)
+    # print len(core_samples_mask)
+    # print sum(core_samples_mask)
 
     # Number of clusters in labels, ignoring noise if present.
     n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
@@ -283,7 +283,7 @@ for fname_df in fname_dfs:
     padding_y=0.1
     padding_x=padding_y
     ax1.set_xlim(numpy.amin(x_data)-padding_x,0.0+padding_x)
-    # ax1.set_ylim(numpy.amin(y_data)-padding_y,0.0+padding_y)
+    ax1.set_ylim(numpy.amin(y_data)-(2.0*padding_y),0.0+padding_y)
     # ax4.set_xlim(0.0-padding_x,1.0+padding_x)
     # ax4.set_ylim(0.0-padding_y,numpy.amax(10**y_data)+padding_y)
 

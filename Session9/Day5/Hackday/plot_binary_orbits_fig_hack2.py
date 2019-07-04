@@ -126,6 +126,17 @@ for i in range(len(x_data_1)):
     alpha=1.0,
     label=label)
 
+    # ax2.scatter(x_data_2[i],y_data_2[i],
+    # edgecolors=col_list[i],facecolors='none',
+    # marker=marker_list[i],
+    # alpha=1.0)
+    #
+    # ax1.scatter(x_data_1[i],y_data_1[i],
+    # edgecolors=col_list[i],facecolors='none',
+    # marker=marker_list[i],
+    # alpha=1.0,
+    # label=label)
+
 ax1.axhline(90,color="k",alpha=0.2,zorder=0)
 
 padding_y=0.1

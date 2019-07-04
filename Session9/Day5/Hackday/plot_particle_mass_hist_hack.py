@@ -27,6 +27,9 @@ fname_df="df_plot_100_all_stable.txt"
 
 df=pd.read_csv("{}/{}".format(path,fname_df),sep="\t",index_col=0) # orbits post selection
 
+# print len(numpy.unique(df['run']))
+# exit()
+
 n_bins=20
 
 print "all systems"
@@ -117,7 +120,8 @@ bin_mass_norm=bin_mass_norm[~numpy.isnan(bin_mass_norm)]
 bin_mass_ratio=bin_mass_ratio[~numpy.isnan(bin_mass_ratio)]
 
 print bin_mass_norm,len(bin_mass_norm)
-print bin_mass_ratio,len(bin_mass_ratio)
+print "mass ratio:\n",bin_mass_ratio,len(bin_mass_ratio)
+print "fraction with m2/m1>0.1 = {}".format(float(len(bin_mass_ratio[bin_mass_ratio>0.1]))/float(len(bin_mass_ratio)))
 
 print "number of largest mass particles = {}".format(len(largest_mass_norm))
 print "number of most massive binary primaries = {}".format(len(bin_mass_ratio))
@@ -193,9 +197,9 @@ xlim1=numpy.amin(x_vals)*1.1
 xlim2=0
 ax1.set_xlim(xlim1,xlim2)
 ax2.set_xlim(xlim1,xlim2)
-ax1.set_xlabel("log(mass/total cloud mass)")
+ax1.set_xlabel("log(m_1/M_c)")
 ax1.set_ylabel("N")
-ax2.set_xlabel('log(mass ratio m2/m1)', color='r')
+ax2.set_xlabel('log(m_2/m_1)', color='r')
 
 print "mass ratio:"
 print hist_rat
