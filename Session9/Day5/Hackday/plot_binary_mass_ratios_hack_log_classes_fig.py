@@ -4,6 +4,7 @@ Scatter plot showing the binary mass ratio as a function of normalised binary ma
 based on APR report fig 4, see: /Users/jrobinson/grav_cloud/analysis_stuff/binary_mass_ratios.py
 '''
 
+from matplotlib import cm
 from matplotlib import rc
 rc('font',**{'size':9})
 
@@ -17,6 +18,7 @@ import matplotlib.ticker as ticker
 import astropy.stats.bayesian_blocks as bb
 from scipy import stats
 import matplotlib.tri as tri
+from scipy.spatial import ConvexHull
 
 from sklearn.neighbors import KernelDensity
 
@@ -33,7 +35,6 @@ path="/Users/jrobinson/xq1_grav_cloud/binary_stability/orbit_results/orbit_resul
 fname_dfs=["df_plot_100_all_stable.txt"]
 
 markers=['^','s','o']
-cont_cols=['r','b','g']
 
 for fname_df in fname_dfs:
     df=pd.read_csv("{}/{}".format(path,fname_df),sep="\t",index_col=0) # orbits post selection
@@ -215,6 +216,11 @@ for fname_df in fname_dfs:
     cluster_markers=[(3,2,0),(4,2,0),(5,2,0)]
     cluster_labels=['class (i)','class (ii)','class (iii)']
     unique_labels_order=[0,2,1,-1]
+    # cont_cols=['r','b','g']
+    colormap = cm.viridis# LinearSegmentedColormap
+    Ncolors=[0,0.5,1.0]
+    cont_cols = [colormap(int(x*colormap.N)) for x in Ncolors]
+    print cont_cols
 
     for i,k in enumerate(unique_labels_order):
 
@@ -235,10 +241,21 @@ for fname_df in fname_dfs:
             # ax1.scatter(df_cluster['x'],df_cluster['y'],s=50,c='k',marker=cluster_markers[i],alpha=0.5,label=cluster_labels[i])
 
             # Add contours to data
-            Z_dat=numpy.zeros(len(df_cluster['x']))+k
+            Z_data=numpy.zeros(len(df_cluster['x']))+k
             triang = tri.Triangulation(df_cluster['x'], df_cluster['y'])
-            # ax1.tricontour(df_cluster['x'], df_cluster['y'], Z_dat, 15, linewidths=10, colors='k',zorder=0)
-            ax1.tricontourf(df_cluster['x'], df_cluster['y'], Z_dat,colors=cont_cols[i],zorder=0,alpha=0.2)
+            # ax1.tricontour(df_cluster['x'], df_cluster['y'], Z_data, 15, linewidths=10, colors='k',zorder=0)
+            # ax1.tricontourf(df_cluster['x'], df_cluster['y'], Z_data,color=cont_cols[i],
+            # zorder=0,alpha=0.2,label=cluster_labels[i])
+            # ax1.scatter(df_cluster['x'], df_cluster['y'],color=cont_cols[i],
+            # zorder=0,label=cluster_labels[i])
+
+            # use scipy to find the outer edges
+            allPoints=numpy.column_stack((df_cluster['x'],df_cluster['y']))
+            hullPoints = ConvexHull(allPoints)
+            # ax1.plot(df_cluster['x'].iloc[hullPoints.vertices], df_cluster['y'].iloc[hullPoints.vertices], 'r--', lw=2)
+            for simplex in hullPoints.simplices:
+                ax1.plot(allPoints[simplex, 0], allPoints[simplex, 1],
+                color=cont_cols[i],label=cluster_labels[i],zorder=0,linestyle="--")
 
 
     # class_member_mask = (labels == -1)
