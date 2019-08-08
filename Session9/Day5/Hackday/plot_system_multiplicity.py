@@ -12,6 +12,10 @@ import matplotlib.gridspec as gridspec
 import matplotlib.colors
 import os
 
+# use LaTeX fonts in the plot
+pyplot.rc('text', usetex=True)
+pyplot.rc('font', family='serif')
+
 # create figure
 fig = pyplot.figure()
 
@@ -110,17 +114,17 @@ c1=matplotlib.colors.to_rgba(pf.pyplot_colours[1],a1)
 ck=matplotlib.colors.to_rgba("k",0.5)
 
 ax1.bar(center_all, numpy.log10(hist_all), color=c0, align='center',zorder=1,edgecolor=ck,linewidth=1,
-width=width_all,label="pre evolution, total systems={}".format(len(N_sys_all)))
+width=width_all,label="pre evolution, total systems = {}".format(len(N_sys_all)))
 ax1.bar(center_all_stable, numpy.log10(hist_all_stable), color=c1, align='center',zorder=1,edgecolor=ck,linewidth=1,
-width=width_all_stable,label="post evolution, total systems={}".format(len(N_sys_all_stable)))
+width=width_all_stable,label="post evolution, total systems = {}".format(len(N_sys_all_stable)))
 
 # set ax limits
 ax1.set_ylim(-0.1, 0.1+numpy.log10(numpy.amax(numpy.append(hist_all,hist_all_stable))))
 # ax1.set_ylim(0.0, 0.1+numpy.log10(numpy.amax(numpy.append(hist_all,hist_all_stable))))
 # ax1.set_xlim(0.0, 0.1+(numpy.amax(numpy.append(center_all,center_all_stable)))+1)
 # Set axis labels
-ax1.set_xlabel('number of particles in bound system')
-ax1.set_ylabel("log(N)")
+ax1.set_xlabel('$\\mathrm{{number~of~particles~in~bound~system}}$')
+ax1.set_ylabel("$\\log(n)$")
 
 ax1.legend(loc='upper right',prop={'size': 6})
 # ax1.legend(loc='upper right')
@@ -135,5 +139,5 @@ picname="{}.pdf".format(script_name)
 print "save {}".format(picname)
 pyplot.savefig(picname,bbox_inches='tight',pad_inches=0.0)
 
-pyplot.show()
-# pyplot.close()
+# pyplot.show()
+pyplot.close()

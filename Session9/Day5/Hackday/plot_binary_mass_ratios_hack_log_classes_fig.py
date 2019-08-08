@@ -20,6 +20,10 @@ from scipy import stats
 import matplotlib.tri as tri
 from scipy.spatial import ConvexHull
 
+# use LaTeX fonts in the plot
+pyplot.rc('text', usetex=True)
+pyplot.rc('font', family='serif')
+
 from sklearn.neighbors import KernelDensity
 
 def kde_sklearn(data, grid, bandwidth = 1.0, **kwargs):
@@ -137,6 +141,7 @@ for fname_df in fname_dfs:
     print len(df_kde)
     x_data=numpy.log10(numpy.array(df_kde['m2/m1']).astype(float))
     y_data=numpy.log10((numpy.array(df_kde['m1(kg)']).astype(float)+numpy.array(df_kde['m2(kg)']).astype(float))/numpy.array(df_kde['M_tot(kg)']).astype(float))
+    I_bin=numpy.array(df_kde['I(rad)']).astype(float)
 
     x_min,x_max=ax1.get_xlim()
     y_min,y_max=ax1.get_ylim()
@@ -185,7 +190,7 @@ for fname_df in fname_dfs:
     print "eps={}".format(dbscan_eps)
 
     # DBscan search, SEARCH RESULTS DEPEND ENTIRELY ON dbscan_eps VARIABLE
-    df_fit=pd.DataFrame(numpy.array([x_data,y_data]).T,columns=['x','y'])
+    df_fit=pd.DataFrame(numpy.array([x_data,y_data,I_bin]).T,columns=['x','y','I(rad)'])
     # print df_fit
 
     X=df_fit[['x','y']] #select only position labels (would mass help?)
@@ -216,6 +221,9 @@ for fname_df in fname_dfs:
     cluster_markers=[(3,2,0),(4,2,0),(5,2,0)]
     cluster_labels=['class (i)','class (ii)','class (iii)']
     unique_labels_order=[0,2,1,-1]
+    # cluster_linestyle=[':','--','-.']
+    cluster_linestyle=[[3,1,3,1],[3,1,1,1],[3,1,1,1,1,1]]
+
     # cont_cols=['r','b','g']
     colormap = cm.viridis# LinearSegmentedColormap
     Ncolors=[0,0.5,1.0]
@@ -242,7 +250,7 @@ for fname_df in fname_dfs:
 
             # Add contours to data
             Z_data=numpy.zeros(len(df_cluster['x']))+k
-            triang = tri.Triangulation(df_cluster['x'], df_cluster['y'])
+            # triang = tri.Triangulation(df_cluster['x'], df_cluster['y'])
             # ax1.tricontour(df_cluster['x'], df_cluster['y'], Z_data, 15, linewidths=10, colors='k',zorder=0)
             # ax1.tricontourf(df_cluster['x'], df_cluster['y'], Z_data,color=cont_cols[i],
             # zorder=0,alpha=0.2,label=cluster_labels[i])
@@ -255,9 +263,32 @@ for fname_df in fname_dfs:
             # ax1.plot(df_cluster['x'].iloc[hullPoints.vertices], df_cluster['y'].iloc[hullPoints.vertices], 'r--', lw=2)
             for simplex in hullPoints.simplices:
                 ax1.plot(allPoints[simplex, 0], allPoints[simplex, 1],
-                color=cont_cols[i],label=cluster_labels[i],zorder=0,linestyle="--")
+                color=cont_cols[i],label=cluster_labels[i],zorder=0,dashes=cluster_linestyle[i])
 
-
+            if k==1:
+                # Find the inclination properties of class iii systems
+                print "\n\ninclination of {} systems".format(cluster_labels[i])
+                print "class iii systems"
+                df_iii=df_fit[class_member_mask & core_samples_mask]
+                # print 10**numpy.amin(df_iii['x']),10**numpy.amin(df_iii['y'])
+                I_bin_iii=numpy.array(df_iii['I(rad)'])
+                y_data_iii=numpy.degrees(I_bin_iii)
+                print y_data_iii
+                # print numpy.degrees(I_bin_iii)
+                print len(y_data_iii[y_data_iii<90.0]),len(y_data_iii[y_data_iii>=90.0])
+                print "simulated retrograde/prograde={}".format(float(len(y_data_iii[y_data_iii>=90.0]))/float(len(y_data_iii[y_data_iii<90.0])))
+                print "simulated retrograde fraction={}, mean={}, median={}, std={}".format(
+                float(len(y_data_iii[y_data_iii>=90.0]))/float(len(y_data_iii)),
+                numpy.mean(y_data_iii[y_data_iii>=90.0]),
+                numpy.median(y_data_iii[y_data_iii>=90.0]),
+                numpy.std(y_data_iii[y_data_iii>=90.0]))
+                print "simulated prograde fraction={}, mean={}, median={}, std={}".format(
+                float(len(y_data_iii[y_data_iii<90.0]))/float(len(y_data_iii)),
+                numpy.mean(y_data_iii[y_data_iii<90.0]),
+                numpy.median(y_data_iii[y_data_iii<90.0]),
+                numpy.std(y_data_iii[y_data_iii<90.0]))
+                # ax1.scatter(df_iii["x"],df_iii['y'],color="k",marker="x")
+                print "\n"
     # class_member_mask = (labels == -1)
     # # cluster members
     # df_cluster=df_fit[class_member_mask & core_samples_mask]
@@ -280,7 +311,11 @@ for fname_df in fname_dfs:
     print "slope={}\nintercept={}\nr_value={}\np_value={}\nstd_err={}".format(slope,intercept,r_value,p_value,std_err)
     print "log space: y = {}*x + {}".format(slope,intercept)
     print "linear space: y = {}*x^{}".format(intercept,slope)
-    ax1.plot(grid_x,pf.line_fit(grid_x,slope,intercept),c='k',label="y={:.2f}x+{:.2f}".format(slope,intercept),zorder=0)
+    if intercept<0:
+        sign="-"
+    else:
+        sign="+"
+    ax1.plot(grid_x,pf.line_fit(grid_x,slope,intercept),c='k',label="$y={:.2f}x{}{:.2f}$".format(slope,sign,numpy.absolute(intercept)),zorder=0)
     # ax4.plot(10**grid_x,10**pf.line_fit(grid_x,slope,intercept),c='k')
 
     # # try chi square?
@@ -310,8 +345,8 @@ for fname_df in fname_dfs:
     ax1.set_xlim(numpy.amin(x_data)-padding_x,0.0+padding_x)
     ax1.set_ylim(numpy.amin(y_data)-(2.0*padding_y),0.0+padding_y)
 
-    ax1.set_xlabel('log(m_2/m_1)')
-    ax1.set_ylabel("log((m_2+m_1)/M_c)")
+    ax1.set_xlabel('$\\log(m_2/m_1)$')
+    ax1.set_ylabel("$\\log((m_2+m_1)/M_\\mathrm{{c}})$")
     # ax2.set_ylabel("P.D.")
     # ax3.set_xlabel("P.D.")
 
@@ -334,5 +369,5 @@ for fname_df in fname_dfs:
     print "save {}".format(picname)
     pyplot.savefig(picname,bbox_inches='tight',pad_inches=0.0)
 
-    pyplot.show()
-    # pyplot.close()
+    # pyplot.show()
+    pyplot.close()

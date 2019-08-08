@@ -19,6 +19,10 @@ from scipy import stats
 
 from sklearn.neighbors import KernelDensity
 
+# use LaTeX fonts in the plot
+pyplot.rc('text', usetex=True)
+pyplot.rc('font', family='serif')
+
 def kde_sklearn(data, grid, bandwidth = 1.0, **kwargs):
     kde_skl = KernelDensity(bandwidth = bandwidth, **kwargs)
     kde_skl.fit(data[:, numpy.newaxis])
@@ -96,7 +100,7 @@ y_data_2=e_bin
 y_data_1=numpy.degrees(I_bin)
 
 for i in range(len(x_data)):
-    label="M_c={:.2e}kg".format(Mtot[i])
+    label="$M_\\mathrm{{c}}={:.2e}~\\mathrm{{kg}}$".format(Mtot[i])
     ax2.scatter(x_data[i],y_data_2[i],
     edgecolors=col_list[i],facecolors='none',
     marker=marker_list[i],
@@ -112,102 +116,130 @@ for i in range(len(x_data)):
 
 ax1.axhline(90,color="k",alpha=0.2,zorder=0)
 
-# include observed objects
+# # include observed objects
+# # load real binaries
+# df_tot=pd.read_csv("/Users/jrobinson/grav_cloud/python_stuff/acquire_binaries/df_tnb_tot_deets_18_06_2019.txt",sep="\t",index_col=0)
+# print df_tot
+# print list(df_tot)
+#
+# # Find anything that is a special case on Grundy's webpage, or a dwarf planet at: https://en.wikipedia.org/wiki/Dwarf_planet
+# DP_names=["ceres","pluto","haumea","makemake","eris","orcus","salacia","quaoar","sedna"]
+# DP_DES=["2002 ms4","2007 or10"]
+# df_weird=pd.DataFrame()
+# df_norm=pd.DataFrame()
+# for i in range(len(df_tot)):
+#     name_check=0
+#     name = df_tot.iloc[i]['Object']
+#     # print name
+#     DES = df_tot.iloc[i]['DES']
+#     print i,name,DES
+#
+#     if str(df_tot.iloc[i]['Orbit Status']).lower()=="special case":
+#         print "weird"
+#         # if df_tot.iloc[i]['Deltamag']==0.0:
+#         #     continue
+#         # elif "lempo" in name.lower():
+#         #     continue
+#         # else:
+#         #     df_weird=df_weird.append(df_tot.iloc[i])
+#         #     continue
+#         df_weird=df_weird.append(df_tot.iloc[i])
+#         continue
+#
+#     elif (DES.lower() in DP_DES):
+#         print "weird"
+#         df_weird=df_weird.append(df_tot.iloc[i])
+#         continue
+#     else:
+#         for n in (name.lower().split(" ")):
+#             if n in DP_names:
+#                 print "weird"
+#                 df_weird=df_weird.append(df_tot.iloc[i])
+#                 name_check+=1
+#                 break
+#
+#     if name_check==0:
+#         print "append"
+#         df_norm=df_norm.append(df_tot.iloc[i])
+#
+# print len(df_tot)
+# print len(df_norm)
+# print len(df_weird)
+#
+# # df_tot=df_norm
+# # exit()
+#
+# a_bin_norm=numpy.array(df_norm['a(km)'])*1e3
+# e_bin_norm=numpy.array(df_norm['e'])
+# I_bin_norm=numpy.array(df_norm['i(deg)'])
+#
+# a_bin_weird=numpy.array(df_weird['a(km)'])*1e3
+# e_bin_weird=numpy.array(df_weird['e'])
+# I_bin_weird=numpy.array(df_weird['i(deg)'])
+#
+# x_data_norm=numpy.log10(a_bin_norm)
+# y_data_norm_1=I_bin_norm # lol
+# y_data_norm_2=e_bin_norm
+#
+# x_data_weird=numpy.log10(a_bin_weird)
+# y_data_weird_1=I_bin_weird
+# y_data_weird_2=e_bin_weird
+#
+# alph_norm=0.5
+# ax1.scatter(x_data_norm,y_data_norm_1,
+# marker='x',
+# color="k",
+# s=15,
+# alpha=alph_norm,
+# label="observed binaries")
+#
+# ax2.scatter(x_data_norm,y_data_norm_2,
+# marker='x',
+# color="k",
+# s=15,
+# alpha=alph_norm)
+#
+# ax1.scatter(x_data_weird,y_data_weird_1,
+# marker="+",
+# color="r",
+# s=15,
+# alpha=1.0,
+# label="Special/D.P.")
+#
+# ax2.scatter(x_data_weird,y_data_weird_2,
+# marker="+",
+# color="r",
+# s=15,
+# alpha=1.0)
+
 # load real binaries
-df_tot=pd.read_csv("/Users/jrobinson/grav_cloud/python_stuff/acquire_binaries/df_tnb_tot_deets_18_06_2019.txt",sep="\t",index_col=0)
-print df_tot
-print list(df_tot)
+df_tot=pd.read_csv("/Users/jrobinson/grav_cloud/python_stuff/acquire_binaries/Grundy2019_table_19.csv",sep=",",encoding='utf-8')
+df_tot=df_tot.replace(',',"",regex=True)
 
-# Find anything that is a special case on Grundy's webpage, or a dwarf planet at: https://en.wikipedia.org/wiki/Dwarf_planet
-DP_names=["ceres","pluto","haumea","makemake","eris","orcus","salacia","quaoar","sedna"]
-DP_DES=["2002 ms4","2007 or10"]
-df_weird=pd.DataFrame()
-df_norm=pd.DataFrame()
-for i in range(len(df_tot)):
-    name_check=0
-    name = df_tot.iloc[i]['Object']
-    # print name
-    DES = df_tot.iloc[i]['DES']
-    print i,name,DES
+# Load binaries with inclination
+df_complete=df_tot[~df_tot['incl(deg)'].isna()]
 
-    if str(df_tot.iloc[i]['Orbit Status']).lower()=="special case":
-        print "weird"
-        # if df_tot.iloc[i]['Deltamag']==0.0:
-        #     continue
-        # elif "lempo" in name.lower():
-        #     continue
-        # else:
-        #     df_weird=df_weird.append(df_tot.iloc[i])
-        #     continue
-        df_weird=df_weird.append(df_tot.iloc[i])
-        continue
+a_bin_real=numpy.array(df_complete['a_bin(km)']).astype(float)*1e3
+e_bin_real=numpy.array(df_complete['e_hel']).astype(float)
+I_bin_real=numpy.array(df_complete['incl(deg)']).astype(float)
 
-    elif (DES.lower() in DP_DES):
-        print "weird"
-        df_weird=df_weird.append(df_tot.iloc[i])
-        continue
-    else:
-        for n in (name.lower().split(" ")):
-            if n in DP_names:
-                print "weird"
-                df_weird=df_weird.append(df_tot.iloc[i])
-                name_check+=1
-                break
+x_data_real=numpy.log10(a_bin_real)
+y_data_real_1=I_bin_real # lol
+y_data_real_2=e_bin_real
 
-    if name_check==0:
-        print "append"
-        df_norm=df_norm.append(df_tot.iloc[i])
-
-print len(df_tot)
-print len(df_norm)
-print len(df_weird)
-
-# df_tot=df_norm
-# exit()
-
-a_bin_norm=numpy.array(df_norm['a(km)'])*1e3
-e_bin_norm=numpy.array(df_norm['e'])
-I_bin_norm=numpy.array(df_norm['i(deg)'])
-
-a_bin_weird=numpy.array(df_weird['a(km)'])*1e3
-e_bin_weird=numpy.array(df_weird['e'])
-I_bin_weird=numpy.array(df_weird['i(deg)'])
-
-x_data_norm=numpy.log10(a_bin_norm)
-y_data_norm_1=I_bin_norm # lol
-y_data_norm_2=e_bin_norm
-
-x_data_weird=numpy.log10(a_bin_weird)
-y_data_weird_1=I_bin_weird
-y_data_weird_2=e_bin_weird
-
-alph_norm=0.5
-ax1.scatter(x_data_norm,y_data_norm_1,
+alph_real=0.75
+ax1.scatter(x_data_real,y_data_real_1,
 marker='x',
 color="k",
 s=15,
-alpha=alph_norm,
+alpha=alph_real,
 label="observed binaries")
 
-ax2.scatter(x_data_norm,y_data_norm_2,
+ax2.scatter(x_data_real,y_data_real_2,
 marker='x',
 color="k",
 s=15,
-alpha=alph_norm)
-
-ax1.scatter(x_data_weird,y_data_weird_1,
-marker="+",
-color="r",
-s=15,
-alpha=1.0,
-label="Special/D.P.")
-
-ax2.scatter(x_data_weird,y_data_weird_2,
-marker="+",
-color="r",
-s=15,
-alpha=1.0)
-
+alpha=alph_real)
 
 
 padding_y=0.1
@@ -217,9 +249,9 @@ padding_x=padding_y
 # # ax4.set_xlim(0.0-padding_x,1.0+padding_x)
 # ax4.set_ylim(0.0-padding_y,numpy.amax(10**y_data)+padding_y)
 
-ax1.set_xlabel('a(m)')
-ax1.set_ylabel("I(degrees)")
-ax2.set_ylabel("e")
+ax1.set_xlabel('$a_{{\\mathrm{{bin}}}}~(\\mathrm{{m}})$')
+ax1.set_ylabel("$i_{{\\mathrm{{bin}}}}~(\\mathrm{{degrees}})$")
+ax2.set_ylabel("$e_{{\\mathrm{{bin}}}}$")
 
 # Remove duplicates from legend
 handles, labels = ax1.get_legend_handles_labels()
@@ -240,5 +272,5 @@ picname="{}_{}.pdf".format(script_name,fname_df.split("/")[-1].split(".")[0])
 print "save {}".format(picname)
 pyplot.savefig(picname,bbox_inches='tight',pad_inches=0.0)
 
-pyplot.show()
-# pyplot.close()
+# pyplot.show()
+pyplot.close()

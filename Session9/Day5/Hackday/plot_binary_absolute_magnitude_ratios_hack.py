@@ -13,6 +13,10 @@ import matplotlib.gridspec as gridspec
 import os
 import matplotlib.ticker as ticker
 
+# use LaTeX fonts in the plot
+pyplot.rc('text', usetex=True)
+pyplot.rc('font', family='serif')
+
 def eformat(f, prec, exp_digits):
     s = "%.*e"%(prec, f)
     mantissa, exp = s.split('e')
@@ -28,7 +32,8 @@ df=pd.read_csv("{}/{}".format(path,fname_df),sep="\t",index_col=0) # orbits post
 markers=['^','s','o']
 
 # load real binaries
-df_tot=pd.read_csv("/Users/jrobinson/grav_cloud/python_stuff/acquire_binaries/df_tnb_tot_deets_18_06_2019.txt",sep="\t",index_col=0)
+# df_tot=pd.read_csv("/Users/jrobinson/grav_cloud/python_stuff/acquire_binaries/df_tnb_tot_deets_18_06_2019.txt",sep="\t",index_col=0)
+df_tot=pd.read_csv("/Users/jrobinson/grav_cloud/python_stuff/acquire_binaries/df_tnb_tot_deets_04_08_2019.txt",sep="\t",index_col=0)
 print df_tot
 print list(df_tot)
 
@@ -190,7 +195,7 @@ x_data=delta_mag
 y_data=abs_mag1
 
 for i in range(len(x_data)):
-    label="M_c={:.2e}kg".format(Mtot[i])
+    label="$M_\\mathrm{{c}}={:.2e}~\\mathrm{{kg}}$".format(Mtot[i])
     ax1.scatter(x_data[i],y_data[i],
     edgecolors=col_list[i],facecolors='none',
     marker=marker_list[i],
@@ -206,8 +211,8 @@ ax1.scatter(V2V1_weird,HV1_weird,marker='+',color='r',s=15,alpha=1.0,label='Spec
 
 ax1.invert_yaxis()
 # Set axis labels
-ax1.set_ylabel('primary absolute mag (V)')
-ax1.set_xlabel("delta mag")
+ax1.set_ylabel('$\\mathrm{{primary~absolute~magnitude}}~\\mathrm{{m}}_{{V}}$')
+ax1.set_xlabel("$\\Delta \\mathrm{{m}}_{{V}}$")
 
 # add MU69 to plot, check if values match observables
 
@@ -308,5 +313,5 @@ picname="{}_{}.pdf".format(script_name,fname_df.split("/")[-1].split(".")[0])
 print "save {}".format(picname)
 pyplot.savefig(picname,bbox_inches='tight',pad_inches=0.0)
 
-pyplot.show()
-# pyplot.close()
+# pyplot.show()
+pyplot.close()

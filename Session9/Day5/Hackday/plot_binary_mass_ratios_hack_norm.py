@@ -16,6 +16,10 @@ import os
 import matplotlib.ticker as ticker
 import astropy.stats.bayesian_blocks as bb
 
+# use LaTeX fonts in the plot
+pyplot.rc('text', usetex=True)
+pyplot.rc('font', family='serif')
+
 from sklearn.neighbors import KernelDensity
 
 def kde_sklearn(data, grid, bandwidth = 1.0, **kwargs):
@@ -58,16 +62,15 @@ for fname_df in fname_dfs:
     fig.set_size_inches(x_len,y_len)
 
     print [1,(0.2)/s_x],[0.2/s_y,1]
-    gs = gridspec.GridSpec(2,2,width_ratios=[1,(0.2)/s_x],height_ratios=[0.2/s_y,1],wspace=0.0, hspace=0.0)
-    # gs = gridspec.GridSpec(2,2)
-    ax1 = pyplot.subplot(gs[1,0])
-    ax2 = pyplot.subplot(gs[0,0],sharex=ax1)
-    ax3 = pyplot.subplot(gs[1,1],sharey=ax1)
+    # gs = gridspec.GridSpec(2,2,width_ratios=[1,(0.2)/s_x],height_ratios=[0.2/s_y,1],wspace=0.0, hspace=0.0)
+    gs = gridspec.GridSpec(1,1)
+    # ax1 = pyplot.subplot(gs[1,0])
+    # ax2 = pyplot.subplot(gs[0,0],sharex=ax1)
+    # ax3 = pyplot.subplot(gs[1,1],sharey=ax1)
+    ax1 = pyplot.subplot(gs[0,0])
 
-    ax2.tick_params(labelbottom=False)
-    ax3.tick_params(labelleft=False)
-    # ax2.yaxis.set_visible(False)
-    # ax3.xaxis.set_visible(False)
+    # ax2.tick_params(labelbottom=False)
+    # ax3.tick_params(labelleft=False)
 
     print len(df)
     print len(df[~numpy.isnan(df['m1(kg)'])])
@@ -110,7 +113,7 @@ for fname_df in fname_dfs:
     y_data=(m1+m2)/Mtot
 
     for i in range(len(x_data)):
-        label="M_c={:.2e}kg".format(Mtot[i])
+        label="$M_\\mathrm{{c}}=$~{:.2e}$~\\mathrm{{kg}}$".format(Mtot[i])
         ax1.scatter(x_data[i],y_data[i],
         edgecolors=col_list[i],facecolors='none',
         marker=marker_list[i],
@@ -120,56 +123,6 @@ for fname_df in fname_dfs:
 
     print "max values: ",numpy.amax(m2m1),numpy.amax((m1+m2)/Mtot)
     print "min values: ",numpy.amin(m2m1),numpy.amin((m1+m2)/Mtot)
-
-    # # Plot each cloud mass separately for legend
-    # for i,M_tot in enumerate(numpy.unique(numpy.array(df['M_tot(kg)']).astype(float))):
-    #     df2=df[df['M_tot(kg)']==M_tot]
-    #     m1=numpy.array(df2['m1(kg)']).astype(float)
-    #     m2=numpy.array(df2['m2(kg)']).astype(float)
-    #     m2m1=numpy.array(df2['m2/m1']).astype(float)
-    #     Mtot=numpy.array(df2['M_tot(kg)']).astype(float)
-    #
-    #     x_data=m2m1
-    #     y_data=(m1+m2)/Mtot
-    #     print x_data,y_data
-    #
-    #     ax1.scatter(x_data,y_data,
-    #     edgecolors=pf.pyplot_colours[i],facecolors='none',
-    #     marker=markers[i],
-    #     label="M_c={:.2e}kg".format(M_tot),
-    #     s=50,
-    #     alpha=1.0)
-    #
-    #     print numpy.amax(m2m1),numpy.amax((m1+m2)/Mtot)
-    #
-    #     # we set up ax2 to have the exact same y axis as ax1
-    #     # ax1_twin.scatter((m1+m2)/Mtot,m2m1,marker='o',color='None')
-
-    # # we get the ax1_twin y ticks, remove the m2/m1=0 and add m2/m1=1e-3
-    # # note that the ylims must be explicitly preserved
-    # lim = ax1_twin.get_ylim()
-    # ax2_yticks=list(ax1_twin.get_yticks())
-    # print ax2_yticks
-    # ax2_yticks.remove(0)
-    # print ax2_yticks
-    # ax1_twin.set_yticks(ax2_yticks + [1e-3])
-    # ax1_twin.set_ylim(lim)
-    #
-    # print ax1_twin.get_yticks()
-    # print 5.0*numpy.log10(numpy.sqrt(p1/p2)*(1.0/numpy.array(ax1_twin.get_yticks())))
-    #
-    # # use this function to convert an m2/m1 value into a delta mag value
-    # # FuncFormatter can be used as a decorator
-    # @ticker.FuncFormatter
-    # def major_formatter(x, pos):
-    #     # return "[%.2f]" % x
-    #     if x==0:
-    #         return ""
-    #     else:
-    #         return "{:.2f}".format(5.0*numpy.log10(numpy.sqrt(p1/p2)*(1.0/(x)**(1.0/3.0))))
-    #
-    # ax1_twin.yaxis.set_major_formatter(major_formatter)
-    # ax1_twin.set_ylabel('delta mag')
 
     # ensure we pass the entire data set, ordered
     df_kde=df.sort_values(by=['m2/m1'],ascending=False)
@@ -186,40 +139,30 @@ for fname_df in fname_dfs:
     print "x max: ",x_min,x_max
     print "y max: ",y_min,y_max
 
-    # # Add the histograms
-    # n_bins=50 #'auto'
-    # n,bins, _ =ax2.hist(x_data,density=True,bins=n_bins)
-    # print numpy.sum(n*numpy.diff(bins))
-    # ax3.hist(y_data,density=True,bins=n_bins,orientation='horizontal')
-
-    # add KDE
-    N_bin=500
-    # grid_x=numpy.linspace(0.0,1.0,N_bin)
-    # grid_y=numpy.linspace(0.0,y_max)
-    grid_x=numpy.linspace(-0.1,1.1,N_bin)
-    grid_y=numpy.linspace(-0.1,1.1,N_bin)
-
-    bw=0.01/2.0
-    PDF_x = kde_sklearn(x_data, grid_x,bandwidth=bw)
-    ax2.plot(grid_x,PDF_x,color="k")
-    PDF_y = kde_sklearn(y_data, grid_y,bandwidth=bw)
-    ax3.plot(PDF_y,grid_y,color="k")
-
-    print PDF_x
-    print numpy.diff(grid_x)[0]
-
-    from scipy.integrate import simps
-    # Compute the area using the composite Simpson's rule.
-    # area = simps(PDF_x, grid_x)
-    area = simps(PDF_x, dx=numpy.diff(grid_x)[0])
-    print("area =", area)
-    # area = simps(PDF_y, grid_y)
-    area = simps(PDF_y, dx=numpy.diff(grid_y)[0])
-    print("area =", area)
-
-    # Set axis labels
-    # ax1_twin.set_yticklabels([])
-    # ax1_twin.set_xticklabels([])
+    # # add KDE
+    # N_bin=500
+    # # grid_x=numpy.linspace(0.0,1.0,N_bin)
+    # # grid_y=numpy.linspace(0.0,y_max)
+    # grid_x=numpy.linspace(-0.1,1.1,N_bin)
+    # grid_y=numpy.linspace(-0.1,1.1,N_bin)
+    #
+    # bw=0.01/2.0
+    # PDF_x = kde_sklearn(x_data, grid_x,bandwidth=bw)
+    # ax2.plot(grid_x,PDF_x,color="k")
+    # PDF_y = kde_sklearn(y_data, grid_y,bandwidth=bw)
+    # ax3.plot(PDF_y,grid_y,color="k")
+    #
+    # print PDF_x
+    # print numpy.diff(grid_x)[0]
+    #
+    # from scipy.integrate import simps
+    # # Compute the area using the composite Simpson's rule.
+    # # area = simps(PDF_x, grid_x)
+    # area = simps(PDF_x, dx=numpy.diff(grid_x)[0])
+    # print("area =", area)
+    # # area = simps(PDF_y, grid_y)
+    # area = simps(PDF_y, dx=numpy.diff(grid_y)[0])
+    # print("area =", area)
 
     # set axis limits
     padding_y=(0.1/2.0)
@@ -227,22 +170,10 @@ for fname_df in fname_dfs:
     ax1.set_xlim(0.0-padding_x,1.0+(1.5*padding_x))
     ax1.set_ylim(0.0-padding_y,numpy.amax(y_data)+(2.0*padding_y))
 
-    # # remove a single label
-    # import matplotlib.ticker as mticker
-    # def update_ticks(x, pos):
-    #     if x == 0.8:
-    #         return ''
-    #     else:
-    #         return '{:.1f}'.format(x)
-    # ax1.yaxis.set_major_formatter(mticker.FuncFormatter(update_ticks))
-
-    # ax1.set_ylabel('$m_2/m_1$')
-    # ax1.set_xlabel("$(m_2+m_1)/M_\\text{tot}$")
-    ax1.set_xlabel('m_2/m_1')
-    ax1.set_ylabel("(m_2+m_1)/M_c")
-    ax2.set_ylabel("P.D.")
-    ax3.set_xlabel("P.D.")
-    # ax1.legend(loc='upper right',prop={'size': 6})
+    ax1.set_xlabel('$m_2/m_1$')
+    ax1.set_ylabel("$(m_2+m_1)/M_\\mathrm{{c}}$")
+    # ax2.set_ylabel("P.D.")
+    # ax3.set_xlabel("P.D.")
 
     # Remove duplicates from legend
     handles, labels = ax1.get_legend_handles_labels()
@@ -263,5 +194,5 @@ for fname_df in fname_dfs:
     print "save {}".format(picname)
     pyplot.savefig(picname,bbox_inches='tight',pad_inches=0.0)
 
-    pyplot.show()
-    # pyplot.close()
+    # pyplot.show()
+    pyplot.close()

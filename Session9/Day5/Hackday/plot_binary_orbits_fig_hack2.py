@@ -17,6 +17,10 @@ from scipy import stats
 
 from sklearn.neighbors import KernelDensity
 
+# use LaTeX fonts in the plot
+pyplot.rc('text', usetex=True)
+pyplot.rc('font', family='serif')
+
 def kde_sklearn(data, grid, bandwidth = 1.0, **kwargs):
     kde_skl = KernelDensity(bandwidth = bandwidth, **kwargs)
     kde_skl.fit(data[:, numpy.newaxis])
@@ -98,10 +102,10 @@ x_data_2=(m1+m2)/Mtot
 # x_data_2=numpy.log10((m1+m2)/Mtot)
 y_data_2=e_bin
 
-ax1.set_xlabel("(m1+m2)/Mc")
-ax1.set_ylabel("I(degrees)")
+ax1.set_xlabel("$(m_1+m_2)/M_\\mathrm{{c}}$")
+ax1.set_ylabel("$i_{{\\mathrm{{bin}}}}~(\\mathrm{{degrees}})$")
 # ax2.set_xlabel("(m1+m2)/Mc")
-ax2.set_ylabel("e")
+ax2.set_ylabel("$e_{{\\mathrm{{bin}}}}$")
 
 # Use marker size to represent mass ratio
 marker_size_factor=50.0
@@ -153,7 +157,7 @@ marker_size_leg=(leg_vals*marker_size_factor)+size_min
 temp_points=[]
 for i,s in enumerate(marker_size_leg):
     # ax1.scatter(0,0,s=s,color=pf.pyplot_colours[0],label="a/R_hill = {}".format(s/marker_size_factor))
-    temp_points.append(ax2.scatter(0,0,s=s,c="None",edgecolors="k",label="m2/m1={:.2f}".format(leg_vals[i])))
+    temp_points.append(ax2.scatter(0,0,s=s,c="None",edgecolors="k",label="$\\frac{{m_2}}{{m_1}}={:.2f}$".format(leg_vals[i])))
 # make legend with these points representing size
 
 # Remove duplicates from legend
@@ -178,5 +182,5 @@ picname="{}_{}.pdf".format(script_name,fname_df.split("/")[-1].split(".")[0])
 print "save {}".format(picname)
 pyplot.savefig(picname,bbox_inches='tight',pad_inches=0.0)
 
-pyplot.show()
-# pyplot.close()
+# pyplot.show()
+pyplot.close()

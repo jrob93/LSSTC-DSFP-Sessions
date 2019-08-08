@@ -13,6 +13,10 @@ import matplotlib.gridspec as gridspec
 import os
 import matplotlib.ticker as ticker
 
+# use LaTeX fonts in the plot
+pyplot.rc('text', usetex=True)
+pyplot.rc('font', family='serif')
+
 def eformat(f, prec, exp_digits):
     s = "%.*e"%(prec, f)
     mantissa, exp = s.split('e')
@@ -28,7 +32,8 @@ df=pd.read_csv("{}/{}".format(path,fname_df),sep="\t",index_col=0) # orbits post
 markers=['^','s','o']
 
 # load real binaries
-df_tot=pd.read_csv("/Users/jrobinson/grav_cloud/python_stuff/acquire_binaries/df_tnb_tot_deets_18_06_2019.txt",sep="\t",index_col=0)
+# df_tot=pd.read_csv("/Users/jrobinson/grav_cloud/python_stuff/acquire_binaries/df_tnb_tot_deets_18_06_2019.txt",sep="\t",index_col=0)
+df_tot=pd.read_csv("/Users/jrobinson/grav_cloud/python_stuff/acquire_binaries/df_tnb_tot_deets_04_08_2019.txt",sep="\t",index_col=0)
 print df_tot
 print list(df_tot)
 
@@ -53,7 +58,21 @@ for i in range(len(df_tot)):
         # else:
         #     df_weird=df_weird.append(df_tot.iloc[i])
         #     continue
-        df_weird=df_weird.append(df_tot.iloc[i])
+
+        # df_weird=df_weird.append(df_tot.iloc[i])
+
+        # drop the triple and contact system
+        if "lempo" in name.lower():
+            print "skip"
+            continue
+        elif "qg298" in name.lower():
+            print "skip"
+            continue
+        else:
+            df_weird=df_weird.append(df_tot.iloc[i])
+            continue
+
+
         continue
 
     elif (DES.lower() in DP_DES):
@@ -79,16 +98,31 @@ print len(df_weird)
 # df_tot=df_norm
 # exit()
 
+name=numpy.array(df_tot['Object'])
 V1=numpy.array(df_tot['V1']).astype(float)
 V2=numpy.array(df_tot['V2']).astype(float)
+V2V1=numpy.array(df_tot['Deltamag']).astype(float)
+name_norm=numpy.array(df_norm['Object'])
 V1_norm=numpy.array(df_norm['V1']).astype(float)
 V2_norm=numpy.array(df_norm['V2']).astype(float)
 V2V1_norm=numpy.array(df_norm['Deltamag']).astype(float)
+name_weird=numpy.array(df_weird['Object'])
 V1_weird=numpy.array(df_weird['V1']).astype(float)
 V2_weird=numpy.array(df_weird['V2']).astype(float)
 V2V1_weird=numpy.array(df_weird['Deltamag']).astype(float)
 
-print V1,V2
+print "all delta m = 0"
+for i in range(len(V1)):
+    if V2V1[i]==0:
+        print name[i],V1[i],V2[i],V2V1[i]
+print "norm delta m = 0"
+for i in range(len(V1_norm)):
+    if V2V1_norm[i]==0:
+        print name_norm[i],V1_norm[i],V2_norm[i],V2V1_norm[i]
+print "weird delta m = 0"
+for i in range(len(V1_weird)):
+    if V2V1_weird[i]==0:
+        print name_weird[i],V1_weird[i],V2_weird[i],V2V1_weird[i]
 
 fig = pyplot.figure()
 
@@ -135,6 +169,7 @@ for i,M_tot in enumerate(numpy.unique(numpy.array(df['M_tot(kg)']).astype(float)
     df2=df[df['M_tot(kg)']==M_tot]
     print "mass = {}kg, number of binaries = {}".format(M_tot,len(df2))
     rho=numpy.array(df2['rho(kgm-3)']).astype(float)
+    # rho=5e2
     R1=((3.0*numpy.array(df2['m1(kg)']).astype(float))/(4.0*numpy.pi*rho))**(1.0/3.0)
     R2=((3.0*numpy.array(df2['m2(kg)']).astype(float))/(4.0*numpy.pi*rho))**(1.0/3.0)
     R2R1=R2/R1
@@ -151,7 +186,7 @@ for i,M_tot in enumerate(numpy.unique(numpy.array(df['M_tot(kg)']).astype(float)
     edgecolors=pf.pyplot_colours[i],facecolors='none',
     marker=markers[i],
     s=50,
-    label="M_c={:.2e}kg".format(M_tot),
+    label="$M_\\mathrm{{c}}=$~{:.2e}$~\\mathrm{{kg}}$".format(M_tot),
     alpha=1)
 
     # # we set up ax2 to have the exact same y axis as ax1
@@ -214,13 +249,14 @@ x_lim1=0
 x_lim2=(y_lim-c)/m
 x_plot=numpy.array([x_lim2,(19.0-c)/m])
 y_plot=(m*x_plot)+c
-ax1.plot(x_plot,y_plot,color="r",linestyle=":")
+# ax1.plot(x_plot,y_plot,color="r",linestyle=":")
 
 # Add orbit search limits
 
 for i,M_tot in enumerate(numpy.unique(numpy.array(df['M_tot(kg)']).astype(float))):
     df2=df[df['M_tot(kg)']==M_tot]
     rho=numpy.unique(numpy.array(df2['rho(kgm-3)']).astype(float))[0]
+    # rho=5e2
     N_points=100
     m2_min=numpy.array([2.0e-5*M_tot]*N_points)
     mass_ratios=numpy.logspace(-3,0,N_points)
@@ -232,12 +268,12 @@ for i,M_tot in enumerate(numpy.unique(numpy.array(df['M_tot(kg)']).astype(float)
     delta_mag=5.0*numpy.log10(numpy.sqrt(p1/p2)*(R1/R2))
     mag1=5.0*numpy.log10(C/(numpy.sqrt(p1)*R1)*((d*(d-d0))/(d0**2.0)))
 
-    ax1.plot(delta_mag,mag1,c=pf.pyplot_colours[i],linestyle=":")
+    # ax1.plot(delta_mag,mag1,c=pf.pyplot_colours[i],linestyle=":")
 
 ax1.invert_yaxis()
 # Set axis labels
-ax1.set_ylabel('primary mag (V)')
-ax1.set_xlabel("delta mag")
+ax1.set_ylabel('$\\mathrm{{primary~magnitude}}~\\mathrm{{m}}_{{V}}$')
+ax1.set_xlabel("$\\Delta \\mathrm{{m}}_{{V}}$")
 
 # add MU69 to plot, check if values match observables
 
@@ -328,7 +364,7 @@ def major_formatter(x, pos):
     return "{}".format(eformat((numpy.sqrt(p1/p2)*(10.0**(-x/5.0)))**3.0,1,1))
 
 ax2.xaxis.set_major_formatter(major_formatter)
-ax2.set_xlabel("m_2/m1")
+ax2.set_xlabel("$m_2/m_1$")
 
 # add normalised mass to axis
 
@@ -347,7 +383,7 @@ def major_formatter_y(y, pos):
     return "{}".format(eformat((numpy.sqrt(p1/p2)*(10.0**(-y/5.0)))**3.0,1,1))
 
 ax2.xaxis.set_major_formatter(major_formatter_y)
-ax2.set_ylabel("(m_2+m_1)/M_c")
+ax2.set_ylabel("$(m_2+m_1)/M_\\mathrm{{c}}$")
 
 # ax2.yaxis.set_major_formatter(ticker.FormatStrFormatter('%.1e'))
 
@@ -365,5 +401,5 @@ picname="{}_{}.pdf".format(script_name,fname_df.split("/")[-1].split(".")[0])
 print "save {}".format(picname)
 pyplot.savefig(picname,bbox_inches='tight',pad_inches=0.0)
 
-pyplot.show()
-# pyplot.close()
+# pyplot.show()
+pyplot.close()

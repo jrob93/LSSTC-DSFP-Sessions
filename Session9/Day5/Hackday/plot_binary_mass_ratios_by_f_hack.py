@@ -14,6 +14,10 @@ import matplotlib.gridspec as gridspec
 import os
 import matplotlib.ticker as ticker
 
+# use LaTeX fonts in the plot
+pyplot.rc('text', usetex=True)
+pyplot.rc('font', family='serif')
+
 path="/Users/jrobinson/xq1_grav_cloud/binary_stability/orbit_results/orbit_results_plots"
 fname_dfs=["df_plot_100_all_stable.txt"]
 
@@ -59,8 +63,8 @@ for fname_df in fname_dfs:
     # ax1.set_ylabel('m2/m1')
     # ax3.set_xlabel("(m2+m1)/M_tot")
 
-    fig.text(0.5, 0.01, 'm2/m1', ha='center')
-    fig.text(0.0, 0.5, '(m2+m1)/M_c', va='center', rotation='vertical')
+    fig.text(0.5, 0.01, '$m_2/m_1$', ha='center')
+    fig.text(0.0, 0.5, '$(m_2+m_1)/M_\\mathrm{{c}}$', va='center', rotation='vertical')
 
     f_vals = numpy.unique(numpy.array(df['f']).astype(float))
 
@@ -142,7 +146,7 @@ for fname_df in fname_dfs:
             y_max=numpy.amax(y_data)
 
         for i in range(len(x_data)):
-            label="M_c={:.2e}kg".format(Mtot[i])
+            label="$M_\\mathrm{{c}}={:.2e}~\\mathrm{{kg}}$".format(Mtot[i])
             axes[j].scatter(x_data[i],y_data[i],
             edgecolors=col_list[i],facecolors='none',
             marker=marker_list[i],
@@ -158,8 +162,9 @@ for fname_df in fname_dfs:
         padding=0.1/2.0
 
         # label plots
-        f_label="{}. f={}".format(plot_label[i],f)
-        f_label="{}.".format(plot_label[i])
+        f_label="{}. $f={}$".format(plot_label[i],f)
+        # f_label="f={}".format(f)
+        # f_label="{}.".format(plot_label[i])
         if i%2!=0:
             axes[i].text(1.0,y_max-padding,f_label,fontdict={'size': 6},ha='right')
         else:
@@ -190,7 +195,7 @@ for fname_df in fname_dfs:
     temp_points=[]
     for s in marker_size_leg:
         # ax1.scatter(0,0,s=s,color=pf.pyplot_colours[0],label="a/R_hill = {}".format(s/marker_size_factor))
-        temp_points.append(ax1.scatter(0,0,s=s,c="None",edgecolors="k",label="a/R_H={:.2f}".format(s/marker_size_factor)))
+        temp_points.append(ax1.scatter(0,0,s=s,c="None",edgecolors="k",label="$\\frac{{a_{{\\mathrm{{bin}}}}}}{{R_{{\\mathrm{{Hill}}}}}}={:.2f}$".format(s/marker_size_factor)))
     # make legend with these points representing size
 
     # Remove duplicates from legend
@@ -217,5 +222,5 @@ for fname_df in fname_dfs:
     print "save {}".format(picname)
     pyplot.savefig(picname,bbox_inches='tight',pad_inches=0.0)
 
-    pyplot.show()
-    # pyplot.close()
+    # pyplot.show()
+    pyplot.close()
