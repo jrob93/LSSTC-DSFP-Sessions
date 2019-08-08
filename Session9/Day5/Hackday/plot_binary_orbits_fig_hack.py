@@ -85,33 +85,125 @@ for i in int_list:
 print col_list
 print marker_list
 
-a_bin=numpy.array(df['a(m)'])
-e_bin=numpy.array(df['e'])
-I_bin=numpy.array(df['I(rad)'])
+# a_bin=numpy.array(df['a(m)'])
+# e_bin=numpy.array(df['e'])
+# I_bin=numpy.array(df['I(rad)'])
+#
+# m1=numpy.array(df['m1(kg)'])
+# m2=numpy.array(df['m2(kg)'])
+# m2m1=numpy.array(df['m2/m1'])
+# Mtot=numpy.array(df['M_tot(kg)'])
+#
+# # x_data=a_bin
+# x_data=numpy.log10(a_bin)
+# y_data_2=e_bin
+# y_data_1=numpy.degrees(I_bin)
+#
+# for i in range(len(x_data)):
+#     label="$M_\\mathrm{{c}}={:.2e}~\\mathrm{{kg}}$".format(Mtot[i])
+#     ax2.scatter(x_data[i],y_data_2[i],
+#     edgecolors=col_list[i],facecolors='none',
+#     marker=marker_list[i],
+#     s=20,
+#     alpha=1.0)
+#
+#     ax1.scatter(x_data[i],y_data_1[i],
+#     edgecolors=col_list[i],facecolors='none',
+#     marker=marker_list[i],
+#     s=20,
+#     alpha=1.0,
+#     label=label)
 
-m1=numpy.array(df['m1(kg)'])
-m2=numpy.array(df['m2(kg)'])
-m2m1=numpy.array(df['m2/m1'])
-Mtot=numpy.array(df['M_tot(kg)'])
+print "class iii systems"
+df_iii=df[(df['m2/m1']>0.1) & ((df['m1(kg)']+df['m2(kg)'])/df['M_tot(kg)']>0.1)]
+
+int_list_iii=numpy.array(df_iii['M_tot(kg)'])
+for i,M_tot in enumerate(numpy.unique(numpy.array(df_iii['M_tot(kg)']).astype(float))):
+    int_mask=[int_list_iii==M_tot]
+    int_list_iii[int_mask]=[i]*len(int_mask)
+print int_list_iii
+int_list_iii=int_list_iii.astype(int)
+col_list_iii=[]
+marker_list_iii=[]
+for i in int_list_iii:
+    col_list_iii.append(pf.pyplot_colours[i])
+    marker_list_iii.append(markers[i])
+print col_list_iii
+print marker_list_iii
+
+a_bin_iii=numpy.array(df_iii['a(m)'])
+e_bin_iii=numpy.array(df_iii['e'])
+I_bin_iii=numpy.array(df_iii['I(rad)'])
+
+m1_iii=numpy.array(df_iii['m1(kg)'])
+m2_iii=numpy.array(df_iii['m2(kg)'])
+m2m1_iii=numpy.array(df_iii['m2/m1'])
+Mtot_iii=numpy.array(df_iii['M_tot(kg)'])
 
 # x_data=a_bin
-x_data=numpy.log10(a_bin)
-y_data_2=e_bin
-y_data_1=numpy.degrees(I_bin)
+x_data_iii=numpy.log10(a_bin_iii)
+y_data_2_iii=e_bin_iii
+y_data_1_iii=numpy.degrees(I_bin_iii)
 
-for i in range(len(x_data)):
-    label="$M_\\mathrm{{c}}={:.2e}~\\mathrm{{kg}}$".format(Mtot[i])
-    ax2.scatter(x_data[i],y_data_2[i],
-    edgecolors=col_list[i],facecolors='none',
-    marker=marker_list[i],
-    s=20,
+for i in range(len(x_data_iii)):
+    label="$M_\\mathrm{{c}}={:.2e}~\\mathrm{{kg}}$".format(Mtot_iii[i])
+    ax2.scatter(x_data_iii[i],y_data_2_iii[i],
+    edgecolors=col_list_iii[i],facecolors='none',
+    marker=marker_list_iii[i],
+    s=50,
     alpha=1.0)
 
-    ax1.scatter(x_data[i],y_data_1[i],
-    edgecolors=col_list[i],facecolors='none',
-    marker=marker_list[i],
-    s=20,
+    ax1.scatter(x_data_iii[i],y_data_1_iii[i],
+    edgecolors=col_list_iii[i],facecolors='none',
+    marker=marker_list_iii[i],
+    s=50,
     alpha=1.0,
+    label=label)
+
+df_other=df[~((df['m2/m1']>0.1) & ((df['m1(kg)']+df['m2(kg)'])/df['M_tot(kg)']>0.1))]
+print "other systems = {}".format(len(df_other))
+
+int_list_other=numpy.array(df_other['M_tot(kg)'])
+for i,M_tot in enumerate(numpy.unique(numpy.array(df_other['M_tot(kg)']).astype(float))):
+    int_mask=[int_list_other==M_tot]
+    int_list_other[int_mask]=[i]*len(int_mask)
+print int_list_other
+int_list_other=int_list_other.astype(int)
+col_list_other=[]
+marker_list_other=[]
+for i in int_list_other:
+    col_list_other.append(pf.pyplot_colours[i])
+    marker_list_other.append(markers[i])
+print col_list_other
+print marker_list_other
+
+a_bin_other=numpy.array(df_other['a(m)'])
+e_bin_other=numpy.array(df_other['e'])
+I_bin_other=numpy.array(df_other['I(rad)'])
+
+m1_other=numpy.array(df_other['m1(kg)'])
+m2_other=numpy.array(df_other['m2(kg)'])
+m2m1_other=numpy.array(df_other['m2/m1'])
+Mtot_other=numpy.array(df_other['M_tot(kg)'])
+
+# x_data=a_bin
+x_data_other=numpy.log10(a_bin_other)
+y_data_2_other=e_bin_other
+y_data_1_other=numpy.degrees(I_bin_other)
+
+for i in range(len(x_data_other)):
+    label="$M_\\mathrm{{c}}={:.2e}~\\mathrm{{kg}}$".format(Mtot_other[i])
+    ax2.scatter(x_data_other[i],y_data_2_other[i],
+    edgecolors=col_list_other[i],facecolors='none',
+    marker=marker_list_other[i],
+    s=20,
+    alpha=0.15)
+
+    ax1.scatter(x_data_other[i],y_data_1_other[i],
+    edgecolors=col_list_other[i],facecolors='none',
+    marker=marker_list_other[i],
+    s=20,
+    alpha=0.15,
     label=label)
 
 ax1.axhline(90,color="k",alpha=0.2,zorder=0)
@@ -215,12 +307,14 @@ ax1.axhline(90,color="k",alpha=0.2,zorder=0)
 # load real binaries
 df_tot=pd.read_csv("/Users/jrobinson/grav_cloud/python_stuff/acquire_binaries/Grundy2019_table_19.csv",sep=",",encoding='utf-8')
 df_tot=df_tot.replace(',',"",regex=True)
+print list(df_tot)
 
 # Load binaries with inclination
 df_complete=df_tot[~df_tot['incl(deg)'].isna()]
 
 a_bin_real=numpy.array(df_complete['a_bin(km)']).astype(float)*1e3
-e_bin_real=numpy.array(df_complete['e_hel']).astype(float)
+# e_bin_real=numpy.array(df_complete['e_hel']).astype(float)
+e_bin_real=numpy.array(df_complete['e']).astype(float)
 I_bin_real=numpy.array(df_complete['incl(deg)']).astype(float)
 
 x_data_real=numpy.log10(a_bin_real)
