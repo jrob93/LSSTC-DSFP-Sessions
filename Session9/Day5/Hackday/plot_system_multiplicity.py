@@ -113,13 +113,69 @@ c0=matplotlib.colors.to_rgba(pf.pyplot_colours[0],a1)
 c1=matplotlib.colors.to_rgba(pf.pyplot_colours[1],a1)
 ck=matplotlib.colors.to_rgba("k",0.5)
 
-ax1.bar(center_all, numpy.log10(hist_all), color=c0, align='center',zorder=1,edgecolor=ck,linewidth=1,
+ax1.bar(center_all, numpy.log10(hist_all), color=c0, align='center',zorder=1,edgecolor=ck,linewidth=0,
 width=width_all,label="pre evolution, total systems = {}".format(len(N_sys_all)))
-ax1.bar(center_all_stable, numpy.log10(hist_all_stable), color=c1, align='center',zorder=1,edgecolor=ck,linewidth=1,
+ax1.bar(center_all_stable, numpy.log10(hist_all_stable), color=c1, align='center',zorder=1,edgecolor=ck,linewidth=0,
 width=width_all_stable,label="post evolution, total systems = {}".format(len(N_sys_all_stable)))
 
+# Add -ve values to give height to log(1)=0 bars
+y_shift=-0.1
+mask1=(hist_all>0)
+height1=numpy.zeros(len(hist_all))
+height1[mask1]=y_shift
+mask2=(hist_all_stable>0)
+height2=numpy.zeros(len(hist_all_stable))
+height2[mask2]=y_shift
+
+print height1
+ax1.bar(center_all, height1, color=c0, align='center',zorder=1,edgecolor=ck,linewidth=0,
+width=width_all)
+ax1.bar(center_all_stable, height2, color=c1, align='center',zorder=1,edgecolor=ck,linewidth=0,
+width=width_all_stable)
+
+# add lines for hist1
+space=numpy.unique(width_all)
+x_lines=center_all-(space/2)
+x_lines=numpy.append(x_lines,x_lines[-1]+space)
+
+edge_heights=numpy.zeros(len(x_lines))+y_shift
+edge_heights[0]=numpy.log10(hist_all[0])
+for i in range(1,len(x_lines)-1):
+    # edge_heights[i]=numpy.log10(hist_all[i-1])
+    if hist_all[i-1]>hist_all[i]:
+        edge_heights[i]=numpy.log10(hist_all[i-1])
+    else:
+        edge_heights[i]=numpy.log10(hist_all[i])
+edge_heights[-1]=edge_heights[-2]
+
+ax1.vlines(x_lines,y_shift,edge_heights,color=ck,linewidth=1)
+ax1.hlines(numpy.log10(hist_all[mask1]),x_lines[:-1][mask1],x_lines[:-1][mask1]+space,color=ck,linewidth=1)
+ax1.hlines([y_shift]*len(mask1),x_lines[:-1][mask1],x_lines[:-1][mask1]+space,color=ck,linewidth=1)
+
+# add lines for hist2
+space=numpy.unique(width_all_stable)
+x_lines=center_all_stable-(space/2)
+x_lines=numpy.append(x_lines,x_lines[-1]+space)
+
+edge_heights=numpy.zeros(len(x_lines))+y_shift
+edge_heights[0]=numpy.log10(hist_all_stable[0])
+for i in range(1,len(x_lines)-1):
+    # edge_heights[i]=numpy.log10(hist_all[i-1])
+    if hist_all_stable[i-1]>hist_all_stable[i]:
+        edge_heights[i]=numpy.log10(hist_all_stable[i-1])
+    else:
+        edge_heights[i]=numpy.log10(hist_all_stable[i])
+edge_heights[-1]=edge_heights[-2]
+
+ax1.vlines(x_lines,y_shift,edge_heights,color=ck,linewidth=1)
+ax1.hlines(numpy.log10(hist_all_stable[mask2]),x_lines[:-1][mask2],x_lines[:-1][mask2]+space,color=ck,linewidth=1)
+# ax1.hlines([y_shift]*len(mask2),x_lines[:-1][mask2],x_lines[:-1][mask2]+space,color=ck,linewidth=1)
+
+# ax1.axhline(0,color=ck,linewidth=1,zorder=0)
+
 # set ax limits
-ax1.set_ylim(-0.1, 0.1+numpy.log10(numpy.amax(numpy.append(hist_all,hist_all_stable))))
+# ax1.set_ylim(-0.1, 0.1+numpy.log10(numpy.amax(numpy.append(hist_all,hist_all_stable))))
+
 # ax1.set_ylim(0.0, 0.1+numpy.log10(numpy.amax(numpy.append(hist_all,hist_all_stable))))
 # ax1.set_xlim(0.0, 0.1+(numpy.amax(numpy.append(center_all,center_all_stable)))+1)
 # Set axis labels
@@ -139,5 +195,5 @@ picname="{}.pdf".format(script_name)
 print "save {}".format(picname)
 pyplot.savefig(picname,bbox_inches='tight',pad_inches=0.0)
 
-# pyplot.show()
-pyplot.close()
+pyplot.show()
+# pyplot.close()
