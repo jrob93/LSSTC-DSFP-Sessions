@@ -32,6 +32,7 @@ numpy.random.seed(0)
 
 path="/Users/jrobinson/xq1_grav_cloud/binary_stability/orbit_results/orbit_results_plots"
 fname_df="df_plot_100_all_stable.txt"
+embolden=0
 
 markers=['^','s','o']
 
@@ -62,6 +63,11 @@ ax2 = pyplot.subplot(gs[0,0])
 
 ax2.tick_params(labelbottom=False)
 
+ax1.set_xlabel("$(m_1+m_2)/M_\\mathrm{{c}}$")
+ax1.set_ylabel("$i_{{\\mathrm{{bin}}}}~(\\mathrm{{degrees}})$")
+# ax2.set_xlabel("(m1+m2)/Mc")
+ax2.set_ylabel("$e_{{\\mathrm{{bin}}}}$")
+
 print len(df)
 print len(df[~numpy.isnan(df['m1(kg)'])])
 df=df[~numpy.isnan(df['m1(kg)'])] # drop entries without binaries
@@ -69,77 +75,184 @@ print list(df)
 
 df['m2/m1']=numpy.array(df['m2(kg)']).astype(float)/numpy.array(df['m1(kg)']).astype(float) # move this to a separate script
 
-int_list=numpy.array(df['M_tot(kg)'])
-for i,M_tot in enumerate(numpy.unique(numpy.array(df['M_tot(kg)']).astype(float))):
-    int_mask=[int_list==M_tot]
-    int_list[int_mask]=[i]*len(int_mask)
-print int_list
-int_list=int_list.astype(int)
-col_list=[]
-marker_list=[]
-for i in int_list:
-    col_list.append(pf.pyplot_colours[i])
-    marker_list.append(markers[i])
-print col_list
-print marker_list
+if embolden==0:
+    int_list=numpy.array(df['M_tot(kg)'])
+    for i,M_tot in enumerate(numpy.unique(numpy.array(df['M_tot(kg)']).astype(float))):
+        int_mask=[int_list==M_tot]
+        int_list[int_mask]=[i]*len(int_mask)
+    print int_list
+    int_list=int_list.astype(int)
+    col_list=[]
+    marker_list=[]
+    for i in int_list:
+        col_list.append(pf.pyplot_colours[i])
+        marker_list.append(markers[i])
+    print col_list
+    print marker_list
 
-a_bin=numpy.array(df['a(m)'])
-e_bin=numpy.array(df['e'])
-I_bin=numpy.array(df['I(rad)'])
+    a_bin=numpy.array(df['a(m)'])
+    e_bin=numpy.array(df['e'])
+    I_bin=numpy.array(df['I(rad)'])
 
-m1=numpy.array(df['m1(kg)'])
-m2=numpy.array(df['m2(kg)'])
-m2m1=numpy.array(df['m2/m1'])
-Mtot=numpy.array(df['M_tot(kg)'])
+    m1=numpy.array(df['m1(kg)'])
+    m2=numpy.array(df['m2(kg)'])
+    m2m1=numpy.array(df['m2/m1'])
+    Mtot=numpy.array(df['M_tot(kg)'])
 
-# x_data_1=e_bin
-# y_data_1=numpy.degrees(I_bin)
-x_data_1=(m1+m2)/Mtot
-# x_data_1=numpy.log10((m1+m2)/Mtot)
-y_data_1=numpy.degrees(I_bin)
+    # x_data_1=e_bin
+    # y_data_1=numpy.degrees(I_bin)
+    x_data_1=(m1+m2)/Mtot
+    # x_data_1=numpy.log10((m1+m2)/Mtot)
+    y_data_1=numpy.degrees(I_bin)
 
-x_data_2=(m1+m2)/Mtot
-# x_data_2=numpy.log10((m1+m2)/Mtot)
-y_data_2=e_bin
+    x_data_2=(m1+m2)/Mtot
+    # x_data_2=numpy.log10((m1+m2)/Mtot)
+    y_data_2=e_bin
 
-ax1.set_xlabel("$(m_1+m_2)/M_\\mathrm{{c}}$")
-ax1.set_ylabel("$i_{{\\mathrm{{bin}}}}~(\\mathrm{{degrees}})$")
-# ax2.set_xlabel("(m1+m2)/Mc")
-ax2.set_ylabel("$e_{{\\mathrm{{bin}}}}$")
+    # Use marker size to represent mass ratio
+    marker_size_factor=50.0
+    size_min=10
+    marker_size=(m2m1*marker_size_factor)+size_min
+    print marker_size
 
-# Use marker size to represent mass ratio
-marker_size_factor=50.0
-size_min=10
-marker_size=(m2m1*marker_size_factor)+size_min
-print marker_size
+    for i in range(len(x_data_1)):
+        # label="M_c={:.2e}kg".format(Mtot[i])
+        label=None
 
-for i in range(len(x_data_1)):
-    # label="M_c={:.2e}kg".format(Mtot[i])
-    label=None
+        ax2.scatter(x_data_2[i],y_data_2[i],
+        edgecolors=col_list[i],facecolors='none',
+        marker=marker_list[i],
+        s=marker_size[i],
+        alpha=1.0)
 
-    ax2.scatter(x_data_2[i],y_data_2[i],
-    edgecolors=col_list[i],facecolors='none',
-    marker=marker_list[i],
-    s=marker_size[i],
-    alpha=1.0)
+        ax1.scatter(x_data_1[i],y_data_1[i],
+        edgecolors=col_list[i],facecolors='none',
+        marker=marker_list[i],
+        s=marker_size[i],
+        alpha=1.0,
+        label=label)
 
-    ax1.scatter(x_data_1[i],y_data_1[i],
-    edgecolors=col_list[i],facecolors='none',
-    marker=marker_list[i],
-    s=marker_size[i],
-    alpha=1.0,
-    label=label)
+        # ax2.scatter(x_data_2[i],y_data_2[i],
+        # edgecolors=col_list[i],facecolors='none',
+        # marker=marker_list[i],
+        # alpha=1.0)
+        #
+        # ax1.scatter(x_data_1[i],y_data_1[i],
+        # edgecolors=col_list[i],facecolors='none',
+        # marker=marker_list[i],
+        # alpha=1.0,
+        # label=label)
 
-    # ax2.scatter(x_data_2[i],y_data_2[i],
-    # edgecolors=col_list[i],facecolors='none',
-    # marker=marker_list[i],
-    # alpha=1.0)
-    #
-    # ax1.scatter(x_data_1[i],y_data_1[i],
-    # edgecolors=col_list[i],facecolors='none',
-    # marker=marker_list[i],
-    # alpha=1.0,
-    # label=label)
+else:
+    print "class iii systems"
+    df_iii=df[(df['m2/m1']>0.1) & ((df['m1(kg)']+df['m2(kg)'])/df['M_tot(kg)']>0.1)]
+
+    int_list_iii=numpy.array(df_iii['M_tot(kg)'])
+    for i,M_tot in enumerate(numpy.unique(numpy.array(df_iii['M_tot(kg)']).astype(float))):
+        int_mask=[int_list_iii==M_tot]
+        int_list_iii[int_mask]=[i]*len(int_mask)
+    print int_list_iii
+    int_list_iii=int_list_iii.astype(int)
+    col_list_iii=[]
+    marker_list_iii=[]
+    for i in int_list_iii:
+        col_list_iii.append(pf.pyplot_colours[i])
+        marker_list_iii.append(markers[i])
+    print col_list_iii
+    print marker_list_iii
+
+    a_bin_iii=numpy.array(df_iii['a(m)'])
+    e_bin_iii=numpy.array(df_iii['e'])
+    I_bin_iii=numpy.array(df_iii['I(rad)'])
+
+    m1_iii=numpy.array(df_iii['m1(kg)'])
+    m2_iii=numpy.array(df_iii['m2(kg)'])
+    m2m1_iii=numpy.array(df_iii['m2/m1'])
+    Mtot_iii=numpy.array(df_iii['M_tot(kg)'])
+
+    x_data_1_iii=(m1_iii+m2_iii)/Mtot_iii
+    y_data_1_iii=numpy.degrees(I_bin_iii)
+
+    x_data_2_iii=(m1_iii+m2_iii)/Mtot_iii
+    y_data_2_iii=e_bin_iii
+
+    # Use marker size to represent mass ratio
+    marker_size_factor=50.0
+    size_min=10
+    marker_size=(m2m1_iii*marker_size_factor)+size_min
+    print marker_size
+
+    for i in range(len(x_data_1_iii)):
+        # label="M_c={:.2e}kg".format(Mtot[i])
+        label=None
+
+        ax2.scatter(x_data_2_iii[i],y_data_2_iii[i],
+        edgecolors=col_list_iii[i],facecolors='none',
+        marker=marker_list_iii[i],
+        s=marker_size[i],
+        alpha=1.0)
+
+        ax1.scatter(x_data_1_iii[i],y_data_1_iii[i],
+        edgecolors=col_list_iii[i],facecolors='none',
+        marker=marker_list_iii[i],
+        s=marker_size[i],
+        alpha=1.0,
+        label=label)
+
+    df_other=df[~((df['m2/m1']>0.1) & ((df['m1(kg)']+df['m2(kg)'])/df['M_tot(kg)']>0.1))]
+    print "other systems = {}".format(len(df_other))
+
+    int_list_other=numpy.array(df_other['M_tot(kg)'])
+    for i,M_tot in enumerate(numpy.unique(numpy.array(df_other['M_tot(kg)']).astype(float))):
+        int_mask=[int_list_other==M_tot]
+        int_list_other[int_mask]=[i]*len(int_mask)
+    print int_list_other
+    int_list_other=int_list_other.astype(int)
+    col_list_other=[]
+    marker_list_other=[]
+    for i in int_list_other:
+        col_list_other.append(pf.pyplot_colours[i])
+        marker_list_other.append(markers[i])
+    print col_list_other
+    print marker_list_other
+
+    a_bin_other=numpy.array(df_other['a(m)'])
+    e_bin_other=numpy.array(df_other['e'])
+    I_bin_other=numpy.array(df_other['I(rad)'])
+
+    m1_other=numpy.array(df_other['m1(kg)'])
+    m2_other=numpy.array(df_other['m2(kg)'])
+    m2m1_other=numpy.array(df_other['m2/m1'])
+    Mtot_other=numpy.array(df_other['M_tot(kg)'])
+
+    x_data_1_other=(m1_other+m2_other)/Mtot_other
+    y_data_1_other=numpy.degrees(I_bin_other)
+
+    x_data_2_other=(m1_other+m2_other)/Mtot_other
+    y_data_2_other=e_bin_other
+
+    # Use marker size to represent mass ratio
+    marker_size_factor=50.0
+    size_min=10
+    marker_size=(m2m1_other*marker_size_factor)+size_min
+    print marker_size
+
+    for i in range(len(x_data_1_other)):
+        # label="M_c={:.2e}kg".format(Mtot[i])
+        label=None
+
+        ax2.scatter(x_data_2_other[i],y_data_2_other[i],
+        edgecolors=col_list_other[i],facecolors='none',
+        marker=marker_list_other[i],
+        s=marker_size[i],
+        alpha=0.25)
+
+        ax1.scatter(x_data_1_other[i],y_data_1_other[i],
+        edgecolors=col_list_other[i],facecolors='none',
+        marker=marker_list_other[i],
+        s=marker_size[i],
+        alpha=0.25,
+        label=label)
 
 ax1.axhline(90,color="k",alpha=0.2,zorder=0)
 

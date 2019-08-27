@@ -73,6 +73,7 @@ for r in runs:
     # Get primary and secondary masses, the arrays should already be descending sort
     pri_masses=numpy.array(df_run['m1(kg)']).astype(float)
     sec_masses=numpy.array(df_run['m2(kg)']).astype(float)
+    print "number of primaries: ",len(pri_masses)
     bin_mass=pri_masses[0]
     sec_mass=sec_masses[0]
 
@@ -102,8 +103,10 @@ for r in runs:
     largest_mass=mass[0]
     cloud_mass=cloud_mass[0]
     largest_mass_norm.append(largest_mass/cloud_mass)
+
     bin_mass_norm.append(bin_mass/cloud_mass)
     bin_mass_ratio.append([sec_mass/bin_mass])
+        
     print cloud_mass,largest_mass
     # Note some of the high mass ratios are just extremely small particles
     if sec_mass/bin_mass>0.9:

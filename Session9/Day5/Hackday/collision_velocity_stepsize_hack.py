@@ -178,7 +178,7 @@ for d in dirs:
     ax2.xaxis.tick_top()
 
     ax1.set_xlabel('$t~(\\mathrm{{s}})$')
-    ax1.set_ylabel('$dt v_\\mathrm{{rel}} / r_1$')
+    ax1.set_ylabel('$dt v_\\mathrm{{rel}} / r^*_1$')
     # fig.suptitle('Ratio of collisional distance to primary particle size, vs time')
 
     criterion_frac=float(len(len_ratio[len_ratio<1.0]))/float(len(len_ratio))

@@ -124,8 +124,9 @@ for fname_df in fname_dfs:
     y_data=numpy.log10((m1+m2)/Mtot)
 
     for i in range(len(x_data)):
-        # label="M_c={:.2e}kg".format(Mtot[i])
-        label=None
+        # label="$M_\\mathrm{{c}}={:.2e}~\\mathrm{{kg}}$".format(Mtot[i])
+        label="$M_\\mathrm{{c}}=$~{:.2e}$~\\mathrm{{kg}}$".format(Mtot[i])
+        # label=None
         ax1.scatter(x_data[i],y_data[i],
         edgecolors=col_list[i],facecolors='none',
         marker=marker_list[i],
@@ -194,8 +195,10 @@ for fname_df in fname_dfs:
     # print df_fit
 
     X=df_fit[['x','y']] #select only position labels (would mass help?)
+    print X,numpy.amin(X['x']),numpy.amax(X['x']),numpy.std(X['x']),numpy.amin(X['y']),numpy.amax(X['y']),numpy.std(X['y'])
     X = StandardScaler().fit_transform(X) #rescale the positions: Standardize features by removing the mean and scaling to unit variance
-    # print X
+    print X,numpy.amin(X[:,0]),numpy.amax(X[:,0]),numpy.std(X[:,0]),numpy.amin(X[:,1]),numpy.amax(X[:,1]),numpy.amax(X[:,1])
+    # exit()
 
     db = DBSCAN(eps=dbscan_eps, min_samples=10).fit(X) # do DBSCAN, eps: The maximum distance between two samples for them to be considered as in the same neighborhood.
     core_samples_mask = numpy.zeros_like(db.labels_, dtype=bool)
@@ -220,7 +223,8 @@ for fname_df in fname_dfs:
     # cluster_cols=['r','b','g','y','p','p']
     cluster_markers=[(3,2,0),(4,2,0),(5,2,0)]
     cluster_labels=['class (i)','class (ii)','class (iii)']
-    unique_labels_order=[0,2,1,-1]
+    # unique_labels_order=[0,2,1,-1]
+    unique_labels_order=unique_labels
     # cluster_linestyle=[':','--','-.']
     cluster_linestyle=[[3,1,3,1],[3,1,1,1],[3,1,1,1,1,1]]
 
@@ -355,7 +359,13 @@ for fname_df in fname_dfs:
     from collections import OrderedDict
     by_label = OrderedDict(zip(labels, handles))
 
+    # for i in range(len(by_label)):
+    #     print by_label.values(), by_label.keys()
+    #     for j in range(len(by_label.keys())):
+    #         print by_label.keys()[j],len(by_label.keys()[j])
+
     ax1.legend(by_label.values(), by_label.keys(),loc='lower left',prop={'size': 6})
+    # ax1.legend(loc='lower left',prop={'size': 6})
 
     pyplot.tight_layout()
 

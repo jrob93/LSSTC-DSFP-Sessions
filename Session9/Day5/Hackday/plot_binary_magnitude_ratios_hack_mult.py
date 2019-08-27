@@ -29,6 +29,10 @@ fname_df=fname_dfs[0]
 
 df=pd.read_csv("{}/{}".format(path,fname_df),sep="\t",index_col=0) # orbits post selection
 
+# print len(df)
+# print df[['run','i_orig','N_sys']]
+# exit()
+
 markers=['^','s','o']
 
 # load real binaries
@@ -145,59 +149,71 @@ print len(df[~numpy.isnan(df['m1(kg)'])])
 df=df[~numpy.isnan(df['m1(kg)'])] # drop entries without binaries
 print list(df)
 
-# only plot the simple binary systems
-df=df[df['N_sys']==2]
+# only binary systems and multiple systems separately
+df_bin=df[df['N_sys']==2]
+df_mult=df[df['N_sys']>2]
 
-print "number of observable binaries = {}".format(sum((df['m1(kg)']+df['m1(kg)'])>=1.4e17))
+for count,df in enumerate([df_bin,df_mult]):
+    print "number of observable binaries = {}".format(sum((df['m1(kg)']+df['m1(kg)'])>=1.4e17))
 
-# # Only include f values 3,10,30
-# df=df[(df['f']<100.0) & (df['f']>1.0)]
+    # # Only include f values 3,10,30
+    # df=df[(df['f']<100.0) & (df['f']>1.0)]
 
-# plot size ratio against primary size (similar to Nesvorny et al 2010)
+    # plot size ratio against primary size (similar to Nesvorny et al 2010)
 
-d=44.0 #object distance (AU)
-# d=30.0 #object distance (AU)
-p1=0.08 # albedo, changing this doesn't seem to affect the plot much
-p1=0.15 # albedo, changing this doesn't seem to affect the plot much
-p2=p1
-C=664.5e3 # constant for V band
-d0=1.0
+    d=44.0 #object distance (AU)
+    # d=30.0 #object distance (AU)
+    p1=0.08 # albedo, changing this doesn't seem to affect the plot much
+    p1=0.15 # albedo, changing this doesn't seem to affect the plot much
+    p2=p1
+    C=664.5e3 # constant for V band
+    d0=1.0
 
-print "magnitude parameters:\nd={}AU\np_V={}\nC_V={}".format(d,p1,C)
+    print "magnitude parameters:\nd={}AU\np_V={}\nC_V={}".format(d,p1,C)
 
-# twin axis for extra axis scale
-ax2 = ax1.twiny()
+    if count==0:
+        # twin axis for extra axis scale
+        ax2 = ax1.twiny()
 
-for i,M_tot in enumerate(numpy.unique(numpy.array(df['M_tot(kg)']).astype(float))):
-    df2=df[df['M_tot(kg)']==M_tot]
-    print "mass = {}kg, number of binaries = {}".format(M_tot,len(df2))
-    rho=numpy.array(df2['rho(kgm-3)']).astype(float)
-    # rho=5e2
-    R1=((3.0*numpy.array(df2['m1(kg)']).astype(float))/(4.0*numpy.pi*rho))**(1.0/3.0)
-    R2=((3.0*numpy.array(df2['m2(kg)']).astype(float))/(4.0*numpy.pi*rho))**(1.0/3.0)
-    R2R1=R2/R1
+    for i,M_tot in enumerate(numpy.unique(numpy.array(df['M_tot(kg)']).astype(float))):
+        df2=df[df['M_tot(kg)']==M_tot]
+        print "mass = {}kg, number of binaries = {}".format(M_tot,len(df2))
+        rho=numpy.array(df2['rho(kgm-3)']).astype(float)
+        # rho=5e2
+        R1=((3.0*numpy.array(df2['m1(kg)']).astype(float))/(4.0*numpy.pi*rho))**(1.0/3.0)
+        R2=((3.0*numpy.array(df2['m2(kg)']).astype(float))/(4.0*numpy.pi*rho))**(1.0/3.0)
+        R2R1=R2/R1
 
-    delta_mag=5.0*numpy.log10(numpy.sqrt(p1/p2)*(R1/R2))
-    mag1=5.0*numpy.log10(C/(numpy.sqrt(p1)*R1)*((d*(d-d0))/(d0**2.0)))
+        delta_mag=5.0*numpy.log10(numpy.sqrt(p1/p2)*(R1/R2))
+        mag1=5.0*numpy.log10(C/(numpy.sqrt(p1)*R1)*((d*(d-d0))/(d0**2.0)))
 
-    R_sys=((3.0*numpy.array(df2['m1(kg)']+df2['m2(kg)']).astype(float))/(4.0*numpy.pi*rho))**(1.0/3.0)
-    mag_sys=5.0*numpy.log10(C/(numpy.sqrt(p1)*R_sys)*((d*(d-d0))/(d0**2.0)))
-    print "number of observable binaries = {}".format(sum(mag_sys<=25.0))
+        R_sys=((3.0*numpy.array(df2['m1(kg)']+df2['m2(kg)']).astype(float))/(4.0*numpy.pi*rho))**(1.0/3.0)
+        mag_sys=5.0*numpy.log10(C/(numpy.sqrt(p1)*R_sys)*((d*(d-d0))/(d0**2.0)))
+        print "number of observable binaries = {}".format(sum(mag_sys<=25.0))
 
-    # ax1.scatter(delta_mag,mag1,label="M_tot={:.2e}kg, {}".format(M_tot,len(mag1)))
-    #
-    # # we set up ax2 to have the exact same y axis as ax1
-    # ax2.scatter(delta_mag,mag1,marker='o',color='None')
+        # ax1.scatter(delta_mag,mag1,label="M_tot={:.2e}kg, {}".format(M_tot,len(mag1)))
+        #
+        # # we set up ax2 to have the exact same y axis as ax1
+        # ax2.scatter(delta_mag,mag1,marker='o',color='None')
 
-    ax1.scatter(delta_mag,mag1,
-    edgecolors=pf.pyplot_colours[i],facecolors='none',
-    marker=markers[i],
-    s=50,
-    label="$M_\\mathrm{{c}}=$~{:.2e}$~\\mathrm{{kg}}$".format(M_tot),
-    alpha=1)
+        if count==0:
+            marker_label="$M_\\mathrm{{c}}=$~{:.2e}$~\\mathrm{{kg}}$".format(M_tot)
+            marker_size=50
+            marker_alpha=1.0
+        else:
+            marker_label=None
+            marker_size=25
+            marker_alpha=0.5
 
-    # # we set up ax2 to have the exact same y axis as ax1
-    # ax2.scatter(delta_mag,mag1,marker='o',color='None')
+        ax1.scatter(delta_mag,mag1,
+        edgecolors=pf.pyplot_colours[i],facecolors='none',
+        marker=markers[i],
+        s=marker_size,
+        label=marker_label,
+        alpha=marker_alpha)
+
+        # # we set up ax2 to have the exact same y axis as ax1
+        # ax2.scatter(delta_mag,mag1,marker='o',color='None')
 
 ax1.scatter(V2V1_norm,V1_norm,marker='x',color='k',s=20,alpha=0.25,label='observed binaries',zorder=0)
 

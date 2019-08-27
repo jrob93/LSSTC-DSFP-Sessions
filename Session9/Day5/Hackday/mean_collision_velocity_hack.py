@@ -81,6 +81,9 @@ for i,M_tot in enumerate(numpy.unique(numpy.array(df_rel['M_tot(kg)']).astype(fl
     ax1.plot(grid_x,PDF_x,color=pf.pyplot_colours[i],linestyle=ls[i],label="$M_\\mathrm{{c}}=$~{:.2e}$~\\mathrm{{kg}}$".format(M_tot))
     # ax1.scatter(grid_x,PDF_x,color=pf.pyplot_colours[i])
 
+    print "fraction of collisions below 5m/s = {}".format(float(sum(v_med<5.0))/float(len(v_med)))
+    print "minimum v_rel_median = {}".format(numpy.amin(v_med))
+
 ax1.set_xlim(0,80)
 
 ax1.legend(prop={'size': 6})

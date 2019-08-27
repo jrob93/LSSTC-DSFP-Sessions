@@ -199,21 +199,25 @@ ax4.xaxis.tick_top()
 lim2=2.0*4.217537e+06#0.1*lim#1e8
 zoom=200.0
 
-axins = zoomed_inset_axes(ax3, zoom, loc=3)
-axins.scatter(pos[:,0],pos[:,1],lw=0.0,c=color,s=size1*numpy.sqrt(zoom)/2.0, vmin=0,vmax=1,rasterized=True)
-axins.scatter(pos[i_M,0],pos[i_M,1],marker='+',c='r',zorder=2,alpha=alph_x)
-
+# axins = zoomed_inset_axes(ax3, zoom, loc=3)
+# axins.scatter(pos[:,0],pos[:,1],lw=0.0,c=color,s=size1*numpy.sqrt(zoom)/2.0, vmin=0,vmax=1,rasterized=True)
+# axins.scatter(pos[i_M,0],pos[i_M,1],marker='+',c='r',zorder=2,alpha=alph_x)
+# axins.scatter(CoM[0],CoM[1],marker='x',c='k',zorder=2,alpha=alph_x)
+#
 shr=1.0
 x1, x2, y1, y2 = pos[i_M,0]-lim2/shr, pos[i_M,0]+lim2/shr, pos[i_M,1]-lim2/shr, pos[i_M,1]+lim2/shr # specify the limits
+#
+# axins.set_xlim(x1, x2) # apply the x-limits
+# axins.set_ylim(y1, y2) # apply the y-limits
+#
+# axins.set_xticks([])
+# axins.set_yticks([])
+#
+# mark_inset(ax3, axins, loc1=2, loc2=4, fc="none", ec="0.0")
+# pyplot.draw()
 
-axins.set_xlim(x1, x2) # apply the x-limits
-axins.set_ylim(y1, y2) # apply the y-limits
-
-axins.set_xticks([])
-axins.set_yticks([])
-
-mark_inset(ax3, axins, loc1=2, loc2=4, fc="none", ec="0.0")
-pyplot.draw()
+rect = patches.Rectangle((x1,y1), 2*(lim2/shr), 2*(lim2/shr),color="r",fill=None)
+a[2].add_patch(rect)
 
 print "load","{}/{}/{}_orbit_search.txt".format(run_path,dirname,dirname)
 df_orb=pf.load_orb_file("{}/{}/{}_orbit_search.txt".format(run_path,dirname,dirname))
@@ -221,10 +225,12 @@ n_orb=len(df_orb[df_orb['t(s)']==numpy.amax(df_orb['t(s)'])])
 print 'number of orbits = {}'.format(n_orb)
 aph_list=[]
 for i in range(n_orb):
-    print df_orb.iloc[i]
+    print "binary orbit = {}".format(df_orb.iloc[i])
     orbit=numpy.array(df_orb.iloc[i][['a(m)','e','I(rad)','omega(rad)','OMEGA(rad)','f_true(rad)']])
     pos_orb=pf.planet_orbit(orbit,100)
-    axins.plot(pos_orb[:,0]+pos[i_M,0],pos_orb[:,1]+pos[i_M,1],zorder=0,c='r')
+    # axins.plot(pos_orb[:,0]+pos[i_M,0],pos_orb[:,1]+pos[i_M,1],zorder=0,c='r')
+    a[2].plot(pos_orb[:,0]+pos[i_M,0],pos_orb[:,1]+pos[i_M,1],zorder=0,c='r')
+
     break
 
 pyplot.tight_layout()
@@ -239,5 +245,5 @@ picname="{}/{}_{}.pdf".format(save_path,script_name,dirname)
 print picname
 pyplot.savefig(picname, bbox_inches='tight')
 
-pyplot.close()
-# pyplot.show()
+# pyplot.close()
+pyplot.show()

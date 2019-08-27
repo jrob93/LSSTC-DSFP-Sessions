@@ -114,9 +114,15 @@ c1=matplotlib.colors.to_rgba(pf.pyplot_colours[1],a1)
 ck=matplotlib.colors.to_rgba("k",0.5)
 
 ax1.bar(center_all, numpy.log10(hist_all), color=c0, align='center',zorder=1,edgecolor=ck,linewidth=0,
-width=width_all,label="pre evolution, total systems = {}".format(len(N_sys_all)))
+width=width_all)#,label="pre evolution, total systems = {}".format(len(N_sys_all)))
 ax1.bar(center_all_stable, numpy.log10(hist_all_stable), color=c1, align='center',zorder=1,edgecolor=ck,linewidth=0,
-width=width_all_stable,label="post evolution, total systems = {}".format(len(N_sys_all_stable)))
+width=width_all_stable)#,label="post evolution, total systems = {}".format(len(N_sys_all_stable)))
+
+# Use for legend labels
+ax1.bar(0, 0, color=c0, align='center',zorder=1,edgecolor=ck,linewidth=1,
+width=0,label="pre evolution, total systems = {}".format(len(N_sys_all)))
+ax1.bar(0, 0, color=c1, align='center',zorder=1,edgecolor=ck,linewidth=1,
+width=0,label="post evolution, total systems = {}".format(len(N_sys_all_stable)))
 
 # Add -ve values to give height to log(1)=0 bars
 y_shift=-0.1
