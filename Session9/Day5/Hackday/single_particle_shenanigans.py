@@ -144,7 +144,7 @@ fig = pyplot.figure()
 gs = gridspec.GridSpec(1,1)
 ax1 = pyplot.subplot(gs[0,0])
 
-ax1.scatter(numpy.log10(M_cloud),m_mag)
+ax1.scatter(numpy.log10(M_cloud),m_mag,alpha=0.1)
 ax1.set_xlabel("log M_cloud")
 ax1.set_ylabel("n particles mass > mag 25 ")
 pyplot.show()

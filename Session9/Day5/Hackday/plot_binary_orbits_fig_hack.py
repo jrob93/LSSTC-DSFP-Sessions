@@ -343,7 +343,7 @@ padding_x=padding_y
 # # ax4.set_xlim(0.0-padding_x,1.0+padding_x)
 # ax4.set_ylim(0.0-padding_y,numpy.amax(10**y_data)+padding_y)
 
-ax1.set_xlabel('$a_{{\\mathrm{{bin}}}}~(\\mathrm{{m}})$')
+ax1.set_xlabel('$\\log(a_{{\\mathrm{{bin}}}}~(\\mathrm{{m}}))$')
 ax1.set_ylabel("$i_{{\\mathrm{{bin}}}}~(\\mathrm{{degrees}})$")
 ax2.set_ylabel("$e_{{\\mathrm{{bin}}}}$")
 
